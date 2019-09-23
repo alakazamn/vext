@@ -1,2 +1,2 @@
 # Sparta-High-School-Robotics
-Code for learning and creating VEX based robots using C++
+Sample code and tutorials for learning how to use the IDE VEXcode and to code in C++
