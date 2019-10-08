@@ -11,8 +11,6 @@ SRC_C  = $(wildcard src/*.cpp)
 SRC_C += $(wildcard src/*.c)
 SRC_C += $(wildcard src/*/*.cpp)
 SRC_C += $(wildcard src/*/*.c)
-SRC_C += $(wildcard src/*.swift)
-SRC_C += $(wildcard src/*/*.swift)
 
 OBJ = $(addprefix $(BUILD)/, $(addsuffix .o, $(basename $(SRC_C))) )
 

@@ -49,7 +49,6 @@ endif
 # compile and link tools
 CC      = clang
 CXX     = clang
-SWIFT   = swiftc
 OBJCOPY = arm-none-eabi-objcopy
 SIZE    = arm-none-eabi-size
 LINK    = arm-none-eabi-ld
@@ -78,9 +77,8 @@ TOOL_LIB  = -L"$(TOOLCHAIN)/$(PLATFORM)/gcc/libs"
 # compiler flags
 CFLAGS_CL = -target thumbv7-none-eabi -fshort-enums -Wno-unknown-attributes -U__INT32_TYPE__ -U__UINT32_TYPE__ -D__INT32_TYPE__=long -D__UINT32_TYPE__='unsigned long'
 CFLAGS_V7 = -march=armv7-a -mfpu=neon -mfloat-abi=soft
-CFLAGS    = ${CFLAGS_CL} ${CFLAGS_V7} -Os -Wall -Werror=return-type -ansi -std=gnu99 $(DEFINES)
-CXX_FLAGS = ${CFLAGS_CL} ${CFLAGS_V7} -Os -Wall -Werror=return-type -fno-rtti -fno-threadsafe-statics -fno-exceptions  -std=gnu++11 -ffunction-sections -fdata-sections $(DEFINES)
-SWIFT_FLAGS = -suppress-warnings -Xcc -DDEPLOYMENT_RUNTIME_SWIFT -Xcc -fno-objc-arc -Xcc -m32 -Xcc --target=arm -Xcc -fdeclspec -tools-directory /usr/local/bin/ -static-stdlib -O -sdk $(TOOLCHAIN)/$(PLATFORM)/gcc -I /include -L /libs -L $(TOOLCHAIN)/$(PLATFORM)/libs
+CFLAGS    = ${CFLAGS_CL} ${CFLAGS_V7} -Os -Wall -Werror=return-type -ansi -std=gnu11 $(DEFINES)
+CXX_FLAGS = ${CFLAGS_CL} ${CFLAGS_V7} -Os -Wall -Werror=return-type -fno-rtti -fno-threadsafe-statics -fno-exceptions  --std=gnu++17 -ffunction-sections -fdata-sections -D_POSIX_THREADS -D_UNIX98_THREAD_MUTEX_ATTRIBUTES -Os $(DEFINES)
 
 # linker flags
 LNK_FLAGS = -nostdlib -T "$(TOOLCHAIN)/$(PLATFORM)/lscript.ld" -R "$(TOOLCHAIN)/$(PLATFORM)/stdlib_0.lib" -Map="$(BUILD)/$(PROJECT).map" --gc-section -L"$(TOOLCHAIN)/$(PLATFORM)" ${TOOL_LIB} -L"lib"
