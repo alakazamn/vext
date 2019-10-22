@@ -13,7 +13,7 @@
 namespace vlib {
 
   class motor : public vex::motor {
-    public:
+  public:
     motor( int32_t index ) : vex::motor(index) {}
     motor( int32_t index, bool reverse ) : vex::motor(index, reverse) {}
     ~motor() {}
@@ -27,45 +27,45 @@ namespace vlib {
   };
 
   class two {
-    public:
+  public:
     static void straight(int power, vlib::motor left, vlib::motor right) {
-        vex::directionType direction = power > 0 ? vex::directionType::fwd : vex::directionType::rev;
-        left.spin(direction, abs(power), vex::velocityUnits::pct);
-        right.spin(direction, abs(power), vex::velocityUnits::pct);
+      vex::directionType direction = power > 0 ? vex::directionType::fwd : vex::directionType::rev;
+      left.spin(direction, abs(power), vex::velocityUnits::pct);
+      right.spin(direction, abs(power), vex::velocityUnits::pct);
     }
     static void turn(int x, int y, vlib::motor left, vlib::motor right) {
-          if(x < -10)
-              {
-                right.spin(vex::directionType::fwd, x, vex::velocityUnits::pct);
-                left.spin(vex::directionType::fwd, abs(x), vex::velocityUnits::pct);
-              } 
-              else if (x > 10)
-              {
-                 right.spin(vex::directionType::fwd, x, vex::velocityUnits::pct);
-                left.spin(vex::directionType::fwd, abs(x) * -1, vex::velocityUnits::pct);
-              }
-       
+      if(x < -10)
+      {
+        right.spin(vex::directionType::fwd, x, vex::velocityUnits::pct);
+        left.spin(vex::directionType::fwd, abs(x), vex::velocityUnits::pct);
+      }
+      else if (x > 10)
+      {
+        right.spin(vex::directionType::fwd, x, vex::velocityUnits::pct);
+        left.spin(vex::directionType::fwd, abs(x) * -1, vex::velocityUnits::pct);
+      }
+
     }
     static void stop(vlib::motor left, vlib::motor right) {
-        left.stop();
-        right.stop();
+      left.stop();
+      right.stop();
     }
   };
   class controls {
-    public:
+  public:
     static void bindTwo(vex::controller::axis x, vex::controller::axis y, vex::controller::button b, vlib::motor left, vlib::motor right) {
       bool inverted = false;
       static auto moveUpdate = [&] {
 
         if (direction(y) != 0 && direction(x) == 0) { //axis 1 and axis 3
-                              if(inverted) {
-               two::straight(-1 * y.position(), left, right);
-                              } else {
-                                               two::straight(y.position(), left, right);
-                              }
+          if(inverted) {
+            two::straight(-1 * y.position(), left, right);
+          } else {
+            two::straight(y.position(), left, right);
+          }
         }
         else if (direction(x) != 0) {
-                        two::turn(x.position(), y.position(), right, left);
+          two::turn(x.position(), y.position(), right, left);
         }
         else {
           two::stop(left, right);
@@ -79,25 +79,19 @@ namespace vlib {
       });
       static auto invertControls = [&] {
         inverted = !inverted;
-        vex::brain Brain;
-        if(inverted) {
-          Brain.Screen.print("inverted");
-        } else {
-          Brain.Screen.clearScreen();
-        }
       };
       b.pressed([] {
         invertControls();
       });
     }
-    private:
-      static int direction(vex::controller::axis axis) {
-        if(axis.position()>10) {
-          return 1;
-        } else if(axis.position() < -10) {
-          return -1;
-        }
-        else return 0;
+  private:
+    static int direction(vex::controller::axis axis) {
+      if(axis.position()>10) {
+        return 1;
+      } else if(axis.position() < -10) {
+        return -1;
       }
+      else return 0;
+    }
   };
 }
