@@ -1,4 +1,10 @@
-# VEXcode mkenv.mk 2019_03_26_01
+# VEXcode mkenv.mk 2019_03_26_02
+
+# version for clang headers
+ifneq ("$(origin HEADERS)", "command line")
+HEADERS = 7.0.0
+endif
+
 
 # macros to help with windows paths that include spaces
 sp :=
@@ -71,7 +77,7 @@ CLEAN = $(RMDIR) $(BUILD) 2> /dev/null || :
 endif
 
 # toolchain include and lib locations
-TOOL_INC  = -I"$(TOOLCHAIN)/$(PLATFORM)/clang/7.0.0/include" -I"$(TOOLCHAIN)/$(PLATFORM)/gcc/include"  -I"$(TOOLCHAIN)/$(PLATFORM)/gcc/include/c++/4.9.3"  -I"$(TOOLCHAIN)/$(PLATFORM)/gcc/include/c++/4.9.3/arm-none-eabi/armv7-ar/thumb"
+TOOL_INC  = -I"$(TOOLCHAIN)/$(PLATFORM)/clang/$(HEADERS)/include" -I"$(TOOLCHAIN)/$(PLATFORM)/gcc/include"  -I"$(TOOLCHAIN)/$(PLATFORM)/gcc/include/c++/4.9.3"  -I"$(TOOLCHAIN)/$(PLATFORM)/gcc/include/c++/4.9.3/arm-none-eabi/armv7-ar/thumb"
 TOOL_LIB  = -L"$(TOOLCHAIN)/$(PLATFORM)/gcc/libs"
 
 # compiler flags
