@@ -25,5 +25,7 @@ vlib::motor RightFlapper(vex::PORT15);
 vlib::motor LeftFlapper(vex::PORT5);
 
 int main() { 
-   vlib::controls::bindTwo(Controller.Axis1, Controller.Axis3, Controller.ButtonB, LeftMotor, RightMotor);
+   vlib::controls::bindMove(Controller.Axis1, Controller.Axis3, Controller.ButtonB, LeftMotor, RightMotor);
+   vlib::controls::bind(30, Controller.ButtonR1, Controller.ButtonR2, LeftArm, RightArm);
+   vlib::controls::bind(100, Controller.ButtonL1, Controller.ButtonL2, LeftFlapper, RightFlapper);
 }
