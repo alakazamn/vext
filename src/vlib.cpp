@@ -7,15 +7,68 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 #include "vex.h"
+#include "vex_global.h"
 
 #include <future>
 
 namespace vlib {
 
 class controller : public vex::controller {
-  void simulate(vex::controller::button button) {
-    
+  public:
+  vlib::controller::button ButtonL1() {
+    return vex::controller::ButtonL1;
   }
+  vlib::controller::button ButtonL2() {
+    return vex::controller::ButtonL2;
+  }
+  vlib::controller::button ButtonR1() {
+    return vex::controller::ButtonR1;
+  }
+  vlib::controller::button ButtonR2() {
+    return vex::controller::ButtonR2;
+  }
+  vlib::controller::button ButtonUp() {
+    return vex::controller::ButtonUp;
+  }
+  vlib::controller::button ButtonDown() {
+    return vex::controller::ButtonDown;
+  }
+  vlib::controller::button ButtonLeft() {
+    return vex::controller::ButtonLeft;
+  }
+  vlib::controller::button ButtonRight() {
+    return vex::controller::ButtonRight;
+  }
+  vlib::controller::button ButtonX() {
+    return vex::controller::ButtonX;
+  }
+  vlib::controller::button ButtonY() {
+    return vex::controller::ButtonY;
+  }
+  vlib::controller::button ButtonA() {
+    return vex::controller::ButtonA;
+  }
+
+  class button : public vex::controller::button {
+    void (* pressFunc)(void);
+    void (* relFunc)(void);
+
+    public:
+    void pressed(void (* callback)(void)) {
+      this->pressFunc = callback;
+      vex::controller::button::pressed(callback);
+    }
+    void released(void (* callback)(void)) {
+      this->relFunc = callback;
+      vex::controller::button::released(callback);
+    }
+    void simulatePress() {
+      pressFunc();
+    }
+    void simulateRel() {
+      relFunc();
+    }
+  };
 };
 class motor : public vex::motor {
 public:
