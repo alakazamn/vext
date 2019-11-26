@@ -49,67 +49,37 @@ public:
   }
 };
 class controller : public vex::controller {
-  public:
-  vlib::controller::button ButtonL1() {
-    return vex::controller::ButtonL1;
-  }
-  vlib::controller::button ButtonL2() {
-    return vex::controller::ButtonL2;
-  }
-  vlib::controller::button ButtonR1() {
-    return vex::controller::ButtonR1;
-  }
-  vlib::controller::button ButtonR2() {
-    return vex::controller::ButtonR2;
-  }
-  vlib::controller::button ButtonUp() {
-    return vex::controller::ButtonUp;
-  }
-  vlib::controller::button ButtonDown() {
-    return vex::controller::ButtonDown;
-  }
-  vlib::controller::button ButtonLeft() {
-    return vex::controller::ButtonLeft;
-  }
-  vlib::controller::button ButtonRight() {
-    return vex::controller::ButtonRight;
-  }
-  vlib::controller::button ButtonX() {
-    return vex::controller::ButtonX;
-  }
-  vlib::controller::button ButtonY() {
-    return vex::controller::ButtonY;
-  }
-  vlib::controller::button ButtonA() {
-    return vex::controller::ButtonA;
-  }
-
+public:
   class button : public vex::controller::button {
-    void (* pressFunc)(void);
-    void (* relFunc)(void);
+    void (*pressFunc)(void);
+    void (*relFunc)(void);
 
-    public:
+  public:
     void bind(vlib::motor left, vlib::motor right, int power) {
       static vlib::motor l = left;
       static vlib::motor r = right;
       static int pow = power;
-      pressFunc = [] {
-          two::straight(pow, l, r);
-      };
+      pressFunc = [] { two::straight(pow, l, r); };
       vex::controller::button::pressed(pressFunc);
 
-      relFunc = [] {
-          two::stop(l, r);
-      };
+      relFunc = [] { two::stop(l, r); };
       vex::controller::button::released(relFunc);
     }
-    void simulatePress() {
-      pressFunc();
-    }
-    void simulateRel() {
-      relFunc();
-    }
+    void press() { pressFunc(); }
+    void release() { relFunc(); }
   };
+  
+  vlib::controller::button ButtonL1() { return static_cast<vlib::controller::button&>(vex::controller::ButtonL1); }
+  vlib::controller::button ButtonL2() { return static_cast<vlib::controller::button&>(vex::controller::ButtonL2); }
+  vlib::controller::button ButtonR1() { return static_cast<vlib::controller::button&>(vex::controller::ButtonR1); }
+  vlib::controller::button ButtonR2() { return static_cast<vlib::controller::button&>(vex::controller::ButtonR2); }
+  vlib::controller::button ButtonUp() { return static_cast<vlib::controller::button&>(vex::controller::ButtonUp); }
+  vlib::controller::button ButtonDown() { return static_cast<vlib::controller::button&>(vex::controller::ButtonUp); }
+  vlib::controller::button ButtonLeft() { return static_cast<vlib::controller::button&>(vex::controller::ButtonUp); }
+  vlib::controller::button ButtonRight() { return static_cast<vlib::controller::button&>(vex::controller::ButtonUp); }
+  vlib::controller::button ButtonX() { return static_cast<vlib::controller::button&>(vex::controller::ButtonUp); }
+  vlib::controller::button ButtonY() { return static_cast<vlib::controller::button&>(vex::controller::ButtonUp); }
+  vlib::controller::button ButtonA() { return static_cast<vlib::controller::button&>(vex::controller::ButtonUp); }
 };
 class controls {
 public:
@@ -144,11 +114,13 @@ public:
     b.pressed([] { invertControls(); });
   }
 
-  static void bind(int power, vlib::controller::button up, vlib::controller::button down,
-                      vlib::motor left, vlib::motor right) {
+  static void bind(int power, vlib::controller::button up,
+                   vlib::controller::button down, vlib::motor left,
+                   vlib::motor right) {
     up.bind(left, right, power);
     down.bind(left, right, -power);
   }
+
 private:
   static int direction(vex::controller::axis axis) {
     if (axis.position() > 10) {
