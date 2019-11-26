@@ -13,6 +13,41 @@
 
 namespace vlib {
 
+class motor : public vex::motor {
+public:
+  motor(int32_t index) : vex::motor(index) {}
+  motor(int32_t index, bool reverse) : vex::motor(index, reverse) {}
+  ~motor() {}
+
+  void rotateDeg(double degrees) {
+    vex::motor::rotateFor(degrees, vex::rotationUnits::deg);
+  }
+  void rotateToDeg(double degrees) {
+    vex::motor::rotateTo(degrees, vex::rotationUnits::deg);
+  }
+};
+class two {
+public:
+  static void straight(int power, vlib::motor left, vlib::motor right) {
+    vex::directionType direction =
+        power > 0 ? vex::directionType::fwd : vex::directionType::rev;
+    left.spin(direction, abs(power), vex::velocityUnits::pct);
+    right.spin(direction, abs(power), vex::velocityUnits::pct);
+  }
+  static void turn(int x, int y, vlib::motor left, vlib::motor right) {
+    if (x < -10) {
+      right.spin(vex::directionType::fwd, x, vex::velocityUnits::pct);
+      left.spin(vex::directionType::fwd, abs(x), vex::velocityUnits::pct);
+    } else if (x > 10) {
+      right.spin(vex::directionType::fwd, x, vex::velocityUnits::pct);
+      left.spin(vex::directionType::fwd, abs(x) * -1, vex::velocityUnits::pct);
+    }
+  }
+  static void stop(vlib::motor left, vlib::motor right) {
+    left.stop();
+    right.stop();
+  }
+};
 class controller : public vex::controller {
   public:
   vlib::controller::button ButtonL1() {
@@ -54,13 +89,19 @@ class controller : public vex::controller {
     void (* relFunc)(void);
 
     public:
-    void pressed(void (* callback)(void)) {
-      this->pressFunc = callback;
-      vex::controller::button::pressed(callback);
-    }
-    void released(void (* callback)(void)) {
-      this->relFunc = callback;
-      vex::controller::button::released(callback);
+    void bind(vlib::motor left, vlib::motor right, int power) {
+      static vlib::motor l = left;
+      static vlib::motor r = right;
+      static int pow = power;
+      pressFunc = [] {
+          two::straight(pow, l, r);
+      };
+      vex::controller::button::pressed(pressFunc);
+
+      relFunc = [] {
+          two::stop(l, r);
+      };
+      vex::controller::button::released(relFunc);
     }
     void simulatePress() {
       pressFunc();
@@ -69,42 +110,6 @@ class controller : public vex::controller {
       relFunc();
     }
   };
-};
-class motor : public vex::motor {
-public:
-  motor(int32_t index) : vex::motor(index) {}
-  motor(int32_t index, bool reverse) : vex::motor(index, reverse) {}
-  ~motor() {}
-
-  void rotateDeg(double degrees) {
-    vex::motor::rotateFor(degrees, vex::rotationUnits::deg);
-  }
-  void rotateToDeg(double degrees) {
-    vex::motor::rotateTo(degrees, vex::rotationUnits::deg);
-  }
-};
-
-class two {
-public:
-  static void straight(int power, vlib::motor left, vlib::motor right) {
-    vex::directionType direction =
-        power > 0 ? vex::directionType::fwd : vex::directionType::rev;
-    left.spin(direction, abs(power), vex::velocityUnits::pct);
-    right.spin(direction, abs(power), vex::velocityUnits::pct);
-  }
-  static void turn(int x, int y, vlib::motor left, vlib::motor right) {
-    if (x < -10) {
-      right.spin(vex::directionType::fwd, x, vex::velocityUnits::pct);
-      left.spin(vex::directionType::fwd, abs(x), vex::velocityUnits::pct);
-    } else if (x > 10) {
-      right.spin(vex::directionType::fwd, x, vex::velocityUnits::pct);
-      left.spin(vex::directionType::fwd, abs(x) * -1, vex::velocityUnits::pct);
-    }
-  }
-  static void stop(vlib::motor left, vlib::motor right) {
-    left.stop();
-    right.stop();
-  }
 };
 class controls {
 public:
@@ -139,29 +144,10 @@ public:
     b.pressed([] { invertControls(); });
   }
 
-  static void bind(int power, vex::controller::button up, vex::controller::button down,
+  static void bind(int power, vlib::controller::button up, vlib::controller::button down,
                       vlib::motor left, vlib::motor right) {
-    static auto pressUp = [&] {
-      two::straight(power, left, right);
-    };
-    static auto pressDown = [&] {
-      two::straight(-power, left, right);
-    };
-    static auto rel = [&] {
-      two::stop(left, right);
-    };
-    up.pressed([] {
-      pressUp();
-    });
-    up.released([] {
-      rel();
-    });
-    down.pressed([] {
-      pressDown();
-    });
-    down.released([] {
-      rel();
-    });
+    up.bind(left, right, power);
+    down.bind(left, right, -power);
   }
 private:
   static int direction(vex::controller::axis axis) {
