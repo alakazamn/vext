@@ -28,7 +28,26 @@ public:
   }
 };
 class two {
+private:
 public:
+  static void _spinBy(double degree, double vel, vlib::motor left, vlib::motor right) {
+      double revs = ((degree/360.0) * 13.70)/4;
+      left.spinFor(-revs, vex::rotationUnits::rev, vel, vex::velocityUnits::pct, false);
+      right.spinFor(revs, vex::rotationUnits::rev, vel, vex::velocityUnits::pct, true);
+  }
+  static void _moveBy(double inches, double vel, vlib::motor left, vlib::motor right) {
+      double revs = inches / (5 * M_PI);
+      left.spinFor(-revs, vex::rotationUnits::rev, vel, vex::velocityUnits::pct, false);
+      right.spinFor(-revs, vex::rotationUnits::rev, vel, vex::velocityUnits::pct, true);
+  }
+  #define spinWith(deg, vel, left, right, callback) vex::thread task([] { vlib::two::_spinBy(deg, vel, left, right); callback(); });
+  #define spinTo(deg, left, right, callback) vex::thread task([] {vlib::two::_spinBy(deg, 100, left, right); callback(); });
+  #define spinBy(deg, left, right) vex::thread task([] { vlib::two::_spinBy(deg, 100, left, right); });
+
+  #define moveWith(inches, vel, left, right, callback) vex::thread task([] { vlib::two::_moveBy(inches, vel, left, right); callback(); });
+  #define moveTo(inches, left, right, callback) vex::thread task([] {vlib::two::_moveBy(inches, 100, left, right); callback(); });
+  #define moveBy(inches, left, right) vex::thread task([] { vlib::two::_moveBy(inches, 100, left, right); });
+
   static void straight(int power, vlib::motor left, vlib::motor right) {
     vex::directionType direction =
         power > 0 ? vex::directionType::fwd : vex::directionType::rev;
@@ -48,6 +67,7 @@ public:
     left.stop(vex::brakeType::hold);
     right.stop(vex::brakeType::hold);
   }
+
 };
 class controls {
 public:
