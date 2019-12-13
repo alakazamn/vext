@@ -11,15 +11,14 @@
 #include <iostream>
 
 #include <future>
-#include "vlib.cpp"
+#include "vex_global.h"
+#include "vlib.h"
 
 using namespace vex;
 
 // A global instance of vex::brain used for printing to the V5 brain screen
 vex::brain       Brain;
 vex::controller Controller;
-vlib::motor RightMotor(vex::PORT2);
-vlib::motor LeftMotor(vex::PORT1, true);
 vlib::motor RightArm(vex::PORT16);
 vlib::motor LeftArm(vex::PORT6, true);
 vlib::motor RightFlapper(vex::PORT15);
@@ -29,6 +28,8 @@ vlib::motor RightRamp(vex::PORT20, true);
 
 // A global instance of vex::competition
 vex::competition Competition;
+
+auto bot = vlib::chaindrive(vex::PORT1, vex::PORT2);
 
 // define your global instances of motors and other devices here
 
@@ -60,18 +61,18 @@ void pre_auton( void ) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous( void ) {
-  //basic 1pt auton
- /* vlib::two::straight(-100, LeftFlapper, RightFlapper);
-  task::sleep(4000);
-  vlib::two::stop(LeftFlapper, RightFlapper);*/
+  //basic 4pt auton
+  
   LeftFlapper.spin(directionType::fwd, 100, percentUnits::pct);
   RightFlapper.spin(directionType::fwd, 100, percentUnits::pct);
-  moveTo(63, LeftMotor, RightMotor, [] {
+  moveWith(42, 10, bot, [] {
     LeftFlapper.stop();
     RightFlapper.stop();
-      spinTo(195, LeftMotor, RightMotor, [] {
-          moveTo(50, LeftMotor, RightMotor, [] {
-
+      spinWith(170, 5, bot, [] {
+          moveWith(40, 10, bot, [] {
+              moveWith(3, 10, bot, [] {
+               vlib::two::straight(20, LeftRamp, RightRamp);
+              });
           })
       });
   });
@@ -88,11 +89,11 @@ void autonomous( void ) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol( void ) {
-
-    vlib::controls::bindMove(Controller.Axis1, Controller.Axis3, Controller.ButtonB, LeftMotor, RightMotor);
-    bind(30, Controller.ButtonR1, Controller.ButtonR2, LeftArm, RightArm);
-    bind(100, Controller.ButtonL1, Controller.ButtonL2, LeftFlapper, RightFlapper);
-    bind(50, Controller.ButtonUp, Controller.ButtonDown, LeftRamp, RightRamp);
+    bot.bind(Controller.Axis1, Controller.Axis3);
+    
+    linkMotor(-30, Controller.ButtonUp, Controller.ButtonDown, LeftArm, RightArm); //change to axis2
+    linkMotor(100, Controller.ButtonL2, Controller.ButtonR2, LeftFlapper, RightFlapper); //for intake (flip these)
+    linkMotor(50, Controller.ButtonB, Controller.ButtonX, LeftRamp, RightRamp);
 }
 
 //
@@ -106,7 +107,7 @@ int main() {
     //Run the pre-autonomous function. 
     pre_auton();
         
-    Controller.ButtonX.pressed([] {
+    Controller.ButtonA.pressed([] {
       autonomous();
     });
 }
