@@ -89,10 +89,10 @@ void autonomous( void ) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol( void ) {
-    bot.bind(Controller.Axis1, Controller.Axis3);
-    btn(-30, Controller.ButtonUp, Controller.ButtonDown, arm); //change to axis2
+    bot.bind(Controller.Axis4, Controller.Axis3);
+    axs(100, Controller.Axis2, arm);
     btn(100, Controller.ButtonL2, Controller.ButtonR2, intake); //for intake (flip these)
-    btn(50, Controller.ButtonB, Controller.ButtonX, ramp);
+    btn(50, Controller.ButtonUp, Controller.ButtonDown, ramp);
 }
 
 //

@@ -49,11 +49,7 @@ public:
     up.released([] { two.stop(); });                                  \
     down.released([] { two.stop(); });
 
-  #define axs(pow, up, down, two)                                         \
-    up.pressed([] { two.straight(-pow); });                         \
-    down.pressed([] { two.straight(pow); });                        \
-    up.released([] { two.stop(); });                                  \
-    down.released([] { two.stop(); });
+  #define axs(pow, axis, two)  static auto moveUpdate = [&] { if (axis.position() >= 10 || axis.position() <= -10) {  two.straight(-1 * axis.position());  } else { two.stop(); } }; axis.changed([] { moveUpdate(); });
   };
 } // namespace vlib
 
