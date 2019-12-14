@@ -1,23 +1,30 @@
-/*----------------------------------------------------------------------------*/
-/*                                                                            */
-/*    Module:       main.cpp                                                  */
-/*    Author:       Michael                                                   */
-/*    Created:      Fri May 24 2019                                           */
-/*    Description:  V5 project                                                */
-/*                                                                            */
-/*----------------------------------------------------------------------------*/
+#include "vex.h"
+#include "vlib_two.h"
+
 #ifndef VLIB_CHAINDRIVE_H
 #define VLIB_CHAINDRIVE_H
 
-#include "vex.h"
-#include "vlib_two.h"
+/*-----------------------------------------------------------------------------*/
+/** @file    vlib_two.h
+ * @brief   This class utilizes the vlib::two motorgroup to provide 
+ *          functionality for building a chaindrive.
+ *          Controller binding is provided with a function.
+ *          Some of the methods are intended for use with autons.
+ *//*---------------------------------------------------------------------------*/
 
 namespace vlib {
 
 class chaindrive {
 private:
   vlib::two motors;
+  //bool moveWhileTurning;
 
+  /*
+  * Utility function to get the direction of an axis, with some
+  * cutoff filtering to make sure the press was intentional.
+  * @param axis Just the axis of the controller you want to check.
+  * @return int Positive for up, negative for down, zero for neutral.
+  */
   static int direction(vex::controller::axis axis) {
     if (axis.position() > 10) {
       return 1;
@@ -42,7 +49,7 @@ public:
   /**
    * Rotate the robot by an specific amount of degrees.
    *
-   * Internal and blocking.
+   * Intended for use with autons.
    *
    * @param degrees Angle to spin bot, in degrees
    * @param speed The percentage of motor power to apply
@@ -54,7 +61,7 @@ public:
   /**
    * Move the robot by an specific amount of inches.
    *
-   * Internal and blocking.
+   * Intended for use with autons.
    *
    * @param inches Distance to move, in inches
    * @param speed The percentage of motor power to apply
@@ -65,7 +72,7 @@ public:
   void moveBy(double inches, double speed);
 
   /**
-   * Drive a two-motor bot in a straight line
+   * Drive a two-motor chaindrive bot in a straight line
    *
    * @param speed The percentage of motor power to apply
    */
@@ -80,6 +87,10 @@ public:
    */
 
   void turn(int x, int y);
+  
+  /*void setMovesWhileTurns(bool val);
+
+  bool getMovesWhileTurns();*/
 
   /**
    * Stop a two-motor bot and hold
@@ -91,10 +102,13 @@ public:
 
   void stop();
 
+  /**
+   * Binds bot movement (driver control) to two joysticks
+   *
+   * @param x The horizontal controller axis
+   * @param y Left The vertical controller axis
+   */
   void bind(vex::controller::axis x, vex::controller::axis y);
-
-  void link(int pow, vex::controller::button up, vex::controller::button down);
-  
-  };
+};
 } // namespace vlib
 #endif

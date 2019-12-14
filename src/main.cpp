@@ -10,14 +10,14 @@
 #include "vex.h"
 #include <iostream>
 
-#include <future>
 #include "vex_global.h"
 #include "vlib.h"
+#include <future>
 
 using namespace vex;
 
 // A global instance of vex::brain used for printing to the V5 brain screen
-vex::brain       Brain;
+vex::brain Brain;
 vex::controller Controller;
 
 vex::motor LeftArm(vex::PORT6, true);
@@ -39,21 +39,19 @@ auto bot = vlib::chaindrive(vex::PORT1, vex::PORT2);
 
 // define your global instances of motors and other devices here
 
-
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
 /*                                                                           */
 /*  You may want to perform some actions before the competition starts.      */
 /*  Do them in the following function.  You must return from this function   */
 /*  or the autonomous and usercontrol tasks will not be started.  This       */
-/*  function is only called once after the cortex has been powered on and    */ 
+/*  function is only called once after the cortex has been powered on and    */
 /*  not every time that the robot is disabled.                               */
 /*---------------------------------------------------------------------------*/
 
-void pre_auton( void ) {
+void pre_auton(void) {
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
-  
 }
 
 /*---------------------------------------------------------------------------*/
@@ -66,15 +64,15 @@ void pre_auton( void ) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
-void autonomous( void ) {
-  //basic 4pt auton
-  
+void autonomous(void) {
+  // basic 4pt auton
+
   LeftFlapper.spin(directionType::fwd, 100, percentUnits::pct);
   RightFlapper.spin(directionType::fwd, 100, percentUnits::pct);
   bot.moveBy(42, 10);
-  bot.spinBy(170,5);
-  bot.moveBy(40,10);
-  bot.moveBy(3,10);
+  bot.spinBy(170, 5);
+  bot.moveBy(40, 10);
+  bot.moveBy(3, 10);
   ramp.straight(20);
 }
 
@@ -88,11 +86,12 @@ void autonomous( void ) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
-void usercontrol( void ) {
-    bot.bind(Controller.Axis4, Controller.Axis3);
-    axs(100, Controller.Axis2, arm);
-    btn(100, Controller.ButtonL2, Controller.ButtonR2, intake); //for intake (flip these)
-    btn(50, Controller.ButtonUp, Controller.ButtonDown, ramp);
+void usercontrol(void) {
+  bot.bind(Controller.Axis4, Controller.Axis3);
+  axs(100, Controller.Axis2, arm);
+  btn(100, Controller.ButtonL2, Controller.ButtonR2,
+      intake); // for intake (flip these)
+  btn(50, Controller.ButtonUp, Controller.ButtonDown, ramp);
 }
 
 //
@@ -100,14 +99,12 @@ void usercontrol( void ) {
 //
 
 int main() {
-    //Set up callbacks for autonomous and driver control periods.
-    Competition.autonomous( autonomous );
-    Competition.drivercontrol( usercontrol );
-    
-    //Run the pre-autonomous function. 
-    pre_auton();
-        
-    Controller.ButtonA.pressed([] {
-      autonomous();
-    });
+  // Set up callbacks for autonomous and driver control periods.
+  Competition.autonomous(autonomous);
+  Competition.drivercontrol(usercontrol);
+
+  // Run the pre-autonomous function.
+  pre_auton();
+
+  Controller.ButtonA.pressed([] { autonomous(); });
 }
