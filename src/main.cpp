@@ -19,12 +19,18 @@ using namespace vex;
 // A global instance of vex::brain used for printing to the V5 brain screen
 vex::brain       Brain;
 vex::controller Controller;
-vlib::motor RightArm(vex::PORT16);
-vlib::motor LeftArm(vex::PORT6, true);
-vlib::motor RightFlapper(vex::PORT15);
-vlib::motor LeftFlapper(vex::PORT5, true);
-vlib::motor LeftRamp(vex::PORT10);
-vlib::motor RightRamp(vex::PORT20, true);
+
+vex::motor LeftArm(vex::PORT6, true);
+vex::motor RightArm(vex::PORT16);
+vlib::two arm = vlib::two(LeftArm, RightArm);
+
+vex::motor LeftFlapper(vex::PORT5, true);
+vex::motor RightFlapper(vex::PORT15);
+vlib::two intake = vlib::two(LeftFlapper, RightFlapper);
+
+vex::motor LeftRamp(vex::PORT10, true);
+vex::motor RightRamp(vex::PORT20);
+vlib::two ramp = vlib::two(LeftRamp, RightRamp);
 
 // A global instance of vex::competition
 vex::competition Competition;
@@ -65,17 +71,11 @@ void autonomous( void ) {
   
   LeftFlapper.spin(directionType::fwd, 100, percentUnits::pct);
   RightFlapper.spin(directionType::fwd, 100, percentUnits::pct);
-  moveWith(42, 10, bot, [] {
-    LeftFlapper.stop();
-    RightFlapper.stop();
-      spinWith(170, 5, bot, [] {
-          moveWith(40, 10, bot, [] {
-              moveWith(3, 10, bot, [] {
-               vlib::two::straight(20, LeftRamp, RightRamp);
-              });
-          })
-      });
-  });
+  bot.moveBy(42, 10);
+  bot.spinBy(170,5);
+  bot.moveBy(40,10);
+  bot.moveBy(3,10);
+  ramp.straight(20);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -90,15 +90,15 @@ void autonomous( void ) {
 
 void usercontrol( void ) {
     bot.bind(Controller.Axis1, Controller.Axis3);
-    
-    linkMotor(-30, Controller.ButtonUp, Controller.ButtonDown, LeftArm, RightArm); //change to axis2
-    linkMotor(100, Controller.ButtonL2, Controller.ButtonR2, LeftFlapper, RightFlapper); //for intake (flip these)
-    linkMotor(50, Controller.ButtonB, Controller.ButtonX, LeftRamp, RightRamp);
+    btn(-30, Controller.ButtonUp, Controller.ButtonDown, arm); //change to axis2
+    btn(100, Controller.ButtonL2, Controller.ButtonR2, intake); //for intake (flip these)
+    btn(50, Controller.ButtonB, Controller.ButtonX, ramp);
 }
 
 //
 // Main will set up the competition functions and callbacks.
 //
+
 int main() {
     //Set up callbacks for autonomous and driver control periods.
     Competition.autonomous( autonomous );

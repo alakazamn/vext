@@ -1,33 +1,60 @@
-#ifndef VLIB_TWO_H
-#define VLIB_TWO_H
+/*----------------------------------------------------------------------------*/
+/*                                                                            */
+/*    Copyright (c) Innovation First 2017, All rights reserved.               */
+/*                                                                            */
+/*    Module:     vex_motorgroup.h                                            */
+/*    Author:     James Pearman                                               */
+/*    Created:    7 April 2019                                                */
+/*                                                                            */
+/*    Revisions:                                                              */
+/*                V1.00     TBD - Initial release                             */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
+#import "vex.h"
 
-#include "vex.h"
-
-#include "vlib_motor.h"
+#ifndef VLIB_MOTOR_GROUP_CLASS_H
+#define VLIB_MOTOR_GROUP_CLASS_H
+/*-----------------------------------------------------------------------------*/
+/** @file    vex_motorgroup.h
+ * @brief   Motor group class header
+ *//*---------------------------------------------------------------------------*/
 
 namespace vlib {
-  class two {
-  public:
-    static void straight(int power, vlib::motor left, vlib::motor right) {
-      vex::directionType direction =
-          power > 0 ? vex::directionType::fwd : vex::directionType::rev;
-      left.spin(direction, abs(power), vex::velocityUnits::pct);
-      right.spin(direction, abs(power), vex::velocityUnits::pct);
-    }
-    static void turn(int x, int y, vlib::motor left, vlib::motor right) {
-      if (x < -10) {
-        left.spin(vex::directionType::fwd, abs(x), vex::velocityUnits::pct);
-        right.spin(vex::directionType::fwd, x, vex::velocityUnits::pct);
-      } else if (x > 10) {
-        left.spin(vex::directionType::fwd, abs(x) * -1, vex::velocityUnits::pct);
-        right.spin(vex::directionType::fwd, x, vex::velocityUnits::pct);
-      }
-    }
-    static void stop(vlib::motor left, vlib::motor right) {
-      left.stop(vex::brakeType::hold);
-      right.stop(vex::brakeType::hold);
-    }
 
+class two : public vex::motor_group {
+private:
+  int32_t leftPort;
+  int32_t rightPort;
+
+public:
+  two() : vex::motor_group() {}
+  ~two() {}
+
+  template <typename... Args>
+  two(vex::motor &m1, vex::motor &m2) : vex::motor_group(m1, m2) {
+    leftPort = m1.index();
+    rightPort = m2.index();
+  }
+
+  vex::motor left() { return vex::motor(leftPort, true); }
+  vex::motor right() { return vex::motor(rightPort); }
+
+  void straight(int power);
+  void turn(int x, int y);
+  void stop();
+  
+  #define btn(pow, up, down, two)                                         \
+    up.pressed([] { two.straight(-pow); });                         \
+    down.pressed([] { two.straight(pow); });                        \
+    up.released([] { two.stop(); });                                  \
+    down.released([] { two.stop(); });
+
+  #define axs(pow, up, down, two)                                         \
+    up.pressed([] { two.straight(-pow); });                         \
+    down.pressed([] { two.straight(pow); });                        \
+    up.released([] { two.stop(); });                                  \
+    down.released([] { two.stop(); });
   };
-}
-#endif
+} // namespace vlib
+
+#endif // VCS_MOTOR_GROUP_CLASS_H
