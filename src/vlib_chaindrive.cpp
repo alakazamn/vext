@@ -6,9 +6,9 @@
 * Implementation of vlib::chaindrive methods
 */
 
-//void vlib::chaindrive::setMovesWhileTurns(bool val) { moveWhileTurning = val; }
+void vlib::chaindrive::setMovesWhileTurns(bool val) { moveWhileTurning = val; }
 
-//bool vlib::chaindrive::getMovesWhileTurns() { return moveWhileTurning; }
+bool vlib::chaindrive::getMovesWhileTurns() { return moveWhileTurning; }
 
 void vlib::chaindrive::spinBy(double degrees, double speed) {
   double revs = ((degrees / 360.0) * 13.70) / 4;
@@ -30,6 +30,8 @@ void vlib::chaindrive::straight(int power) { motors.straight(power); }
 
 void vlib::chaindrive::turn(int x, int y) { motors.turn(x, y); }
 
+void vlib::chaindrive::spin_turn(int x, int y) { motors.spin_turn(x, y); }
+
 void vlib::chaindrive::stop() { motors.stop(); }
 
 void vlib::chaindrive::bind(vex::controller::axis x, vex::controller::axis y) {
@@ -37,11 +39,11 @@ void vlib::chaindrive::bind(vex::controller::axis x, vex::controller::axis y) {
     if (direction(y) != 0 && direction(x) == 0) { // axis 1 and axis 3
       straight(y.position());
     } else if (direction(x) != 0) {
-      /*if (getMovesWhileTurns()) {
+      if (getMovesWhileTurns()) {
         spin_turn(x.position(), y.position());
-      } else {*/
+      } else {
         turn(x.position(), y.position());
-      //}
+      }
     } else {
       stop();
     }

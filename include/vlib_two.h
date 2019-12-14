@@ -59,7 +59,15 @@ public:
    * @param int y Vertical Joystick position
    */
   void turn(int x, int y);
-  
+
+
+  /*
+   * Turns the bot based on joystick input, with spin turns
+   * @param int x Horizontal Joystick position
+   * @param int y Vertical Joystick position
+   */
+  void spin_turn(int x, int y);
+
   /*
    * Applies stops both motors and applies brakeType::hold
    */
@@ -81,10 +89,10 @@ public:
 * @param vlib::two two Two-button motorgrouup
 */
 #define btn(pow, up, down, two)                                                \
-  up.pressed([] { two.straight(-pow); });                                      \
-  down.pressed([] { two.straight(pow); });                                     \
-  up.released([] { two.stop(); });                                             \
-  down.released([] { two.stop(); });
+  down.pressed([] { two.straight(-pow); });                                      \
+  up.pressed([] { two.straight(pow); });                                     \
+  down.released([] { two.stop(); });                                             \
+  up.released([] { two.stop(); });
 
 /*
 * Allows binding a vlib::two motorgroup to an joystick axis
@@ -95,7 +103,7 @@ public:
 #define axs(pow, axis, two)                                                    \
   static auto moveUpdate = [&] {                                               \
     if (axis.position() >= 10 || axis.position() <= -10) {                     \
-      two.straight(-1 * axis.position());                                      \
+      two.straight(axis.position());                                      \
     } else {                                                                   \
       two.stop();                                                              \
     }                                                                          \

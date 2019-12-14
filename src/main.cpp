@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "vex_global.h"
+#include "vex_units.h"
 #include "vlib.h"
 #include <future>
 
@@ -37,6 +38,8 @@ vex::competition Competition;
 
 auto bot = vlib::chaindrive(vex::PORT1, vex::PORT2);
 
+int alliance = 0;
+
 // define your global instances of motors and other devices here
 
 /*---------------------------------------------------------------------------*/
@@ -52,6 +55,18 @@ auto bot = vlib::chaindrive(vex::PORT1, vex::PORT2);
 void pre_auton(void) {
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
+  while(true) {
+    if(Controller.ButtonY.pressing()) {
+      alliance = 0;
+      Brain.Screen.print("Red Alliance");
+      return;
+    } else if(Controller.ButtonA.pressing()) {
+      alliance = 1;
+      Brain.Screen.print("Blue Alliance");
+      return;
+    }
+  }
+  return;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -66,14 +81,26 @@ void pre_auton(void) {
 
 void autonomous(void) {
   // basic 4pt auton
+  if(alliance == 0) {
 
-  LeftFlapper.spin(directionType::fwd, 100, percentUnits::pct);
-  RightFlapper.spin(directionType::fwd, 100, percentUnits::pct);
-  bot.moveBy(42, 10);
-  bot.spinBy(170, 5);
-  bot.moveBy(40, 10);
-  bot.moveBy(3, 10);
-  ramp.straight(20);
+    arm.rotateFor(-90, rotationUnits::deg, 100, velocityUnits::pct);
+    intake.spin(directionType::fwd, 100, percentUnits::pct);
+    bot.moveBy(42, 35);
+    intake.stop();
+    bot.spinBy(170, 20);
+    bot.moveBy(45, 20);
+    ramp.rotateTo(200, vex::rotationUnits::deg);
+    bot.moveBy(-20, 100);
+  } else {
+    arm.rotateFor(-90, rotationUnits::deg, 100, velocityUnits::pct);
+    intake.spin(directionType::fwd, 100, percentUnits::pct);
+    bot.moveBy(42, 35);
+    intake.stop();
+    bot.spinBy(-170, 20);
+    bot.moveBy(45, 20);
+    ramp.rotateTo(200, vex::rotationUnits::deg);
+    bot.moveBy(-20, 100);
+  }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -87,11 +114,12 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
+  bot.setMovesWhileTurns(true);
   bot.bind(Controller.Axis4, Controller.Axis3);
   axs(100, Controller.Axis2, arm);
   btn(100, Controller.ButtonL2, Controller.ButtonR2,
-      intake); // for intake (flip these)
-  btn(50, Controller.ButtonUp, Controller.ButtonDown, ramp);
+      intake);
+  btn(30, Controller.ButtonUp, Controller.ButtonDown, ramp);
 }
 
 //
@@ -105,6 +133,7 @@ int main() {
 
   // Run the pre-autonomous function.
   pre_auton();
-
-  Controller.ButtonA.pressed([] { autonomous(); });
+  Controller.ButtonLeft.pressed([] {
+    autonomous();
+  });
 }

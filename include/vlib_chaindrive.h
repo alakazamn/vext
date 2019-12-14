@@ -5,7 +5,7 @@
 #define VLIB_CHAINDRIVE_H
 
 /*-----------------------------------------------------------------------------*/
-/** @file    vlib_two.h
+/** @file   vlib_chaindrive.h
  * @brief   This class utilizes the vlib::two motorgroup to provide 
  *          functionality for building a chaindrive.
  *          Controller binding is provided with a function.
@@ -17,7 +17,7 @@ namespace vlib {
 class chaindrive {
 private:
   vlib::two motors;
-  //bool moveWhileTurning;
+  bool moveWhileTurning;
 
   /*
   * Utility function to get the direction of an axis, with some
@@ -88,9 +88,11 @@ public:
 
   void turn(int x, int y);
   
-  /*void setMovesWhileTurns(bool val);
+  void spin_turn(int x, int y);
 
-  bool getMovesWhileTurns();*/
+  void setMovesWhileTurns(bool val);
+
+  bool getMovesWhileTurns();
 
   /**
    * Stop a two-motor bot and hold
