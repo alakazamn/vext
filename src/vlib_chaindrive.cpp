@@ -1,7 +1,7 @@
 #import "vlib_chaindrive.h"
 
 #include "vex_units.h"
-
+#include <iostream>
 /*
 * Implementation of vlib::chaindrive methods
 */
@@ -36,6 +36,9 @@ void vlib::chaindrive::stop() { motors.stop(); }
 
 void vlib::chaindrive::bind(vex::controller::axis x, vex::controller::axis y) {
   static auto moveUpdate = [&] {
+    std::cout << x.position() << std::endl;
+    std::cout << y.position() << std::endl;
+    std::cout << "----" << std::endl;
     if (direction(y) != 0 && direction(x) == 0) { // axis 1 and axis 3
       straight(y.position());
     } else if (direction(x) != 0) {

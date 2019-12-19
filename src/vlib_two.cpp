@@ -16,22 +16,16 @@ void vlib::two::straight(int power) {
 
 void vlib::two::turn(int x, int y) {
   if (x < -10) {
-    left().spin(vex::directionType::fwd, abs(x), vex::velocityUnits::pct);
-    right().spin(vex::directionType::fwd, x, vex::velocityUnits::pct);
+    left().spin(vex::directionType::fwd, abs(x)*.8, vex::velocityUnits::pct);
+    right().spin(vex::directionType::fwd, x*.8, vex::velocityUnits::pct);
   } else if (x > 10) {
-    left().spin(vex::directionType::fwd, abs(x) * -1, vex::velocityUnits::pct);
-    right().spin(vex::directionType::fwd, x, vex::velocityUnits::pct);
+    left().spin(vex::directionType::fwd, abs(x) * -.8, vex::velocityUnits::pct);
+    right().spin(vex::directionType::fwd, x*.8, vex::velocityUnits::pct);
   }
 }
 
 void vlib::two::spin_turn(int x, int y) {
-  if (x < -10) {
-    left().spin(vex::directionType::fwd, abs(x), vex::velocityUnits::pct);
-    right().spin(vex::directionType::fwd, x, vex::velocityUnits::pct);
-  } else if (x > 10) {
-    left().spin(vex::directionType::fwd, abs(x) * -1, vex::velocityUnits::pct);
-    right().spin(vex::directionType::fwd, x, vex::velocityUnits::pct);
-  }
+  //
 }
 
 void vlib::two::stop() {

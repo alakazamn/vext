@@ -56,13 +56,13 @@ void pre_auton(void) {
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
   while(true) {
-    if(Controller.ButtonY.pressing()) {
+    if(Controller.ButtonLeft.pressing()) {
       alliance = 0;
-      Brain.Screen.print("Red Alliance");
+      Brain.Screen.print("Run Auton");
       return;
-    } else if(Controller.ButtonA.pressing()) {
+    } else if(Controller.ButtonRight.pressing()) {
       alliance = 1;
-      Brain.Screen.print("Blue Alliance");
+      Brain.Screen.print("Don't run auton");
       return;
     }
   }
@@ -82,24 +82,17 @@ void pre_auton(void) {
 void autonomous(void) {
   // basic 4pt auton
   if(alliance == 0) {
-
-    arm.rotateFor(-90, rotationUnits::deg, 100, velocityUnits::pct);
-    intake.spin(directionType::fwd, 100, percentUnits::pct);
-    bot.moveBy(42, 35);
-    intake.stop();
-    bot.spinBy(170, 20);
-    bot.moveBy(45, 20);
-    ramp.rotateTo(200, vex::rotationUnits::deg);
-    bot.moveBy(-20, 100);
+    
+    bot.moveBy(85, 100);
+    arm.straight(100);
+    vex::task::sleep(2000);
+    intake.spin(vex::directionType::fwd, 100, vex::percentUnits::pct);
+    arm.straight(-100);
+    vex::task::sleep(2000);
+    arm.stop();
+    
   } else {
-    arm.rotateFor(-90, rotationUnits::deg, 100, velocityUnits::pct);
-    intake.spin(directionType::fwd, 100, percentUnits::pct);
-    bot.moveBy(42, 35);
-    intake.stop();
-    bot.spinBy(-170, 20);
-    bot.moveBy(45, 20);
-    ramp.rotateTo(200, vex::rotationUnits::deg);
-    bot.moveBy(-20, 100);
+    
   }
 }
 
@@ -114,12 +107,18 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
-  bot.setMovesWhileTurns(true);
+  bot.setMovesWhileTurns(false);
   bot.bind(Controller.Axis4, Controller.Axis3);
   axs(100, Controller.Axis2, arm);
-  btn(100, Controller.ButtonL2, Controller.ButtonR2,
+  btn(75, Controller.ButtonL2, Controller.ButtonR1,
       intake);
-  btn(30, Controller.ButtonUp, Controller.ButtonDown, ramp);
+  btn(60, Controller.ButtonUp, Controller.ButtonDown, ramp);
+
+  Controller.ButtonL1.pressed([] { intake.straight(10); });
+  Controller.ButtonL1.released([] { intake.stop(); });
+
+  Controller.ButtonR2.pressed([] { intake.straight(-10); });
+  Controller.ButtonR2.released([] { intake.stop(); });
 }
 
 //
@@ -133,7 +132,7 @@ int main() {
 
   // Run the pre-autonomous function.
   pre_auton();
-  Controller.ButtonLeft.pressed([] {
+  Controller.ButtonA.pressed([] {
     autonomous();
   });
 }
