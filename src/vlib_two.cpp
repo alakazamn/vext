@@ -31,8 +31,6 @@ double joystickAngle(int x, int y) {
 double tween(double percent, double a, double b) {
   double low = fmin(a,b);
   double high = fmax(a,b);
-  std::cout << high << " - " << low << std::endl;
-  std::cout << a + (abs(high - low) * percent) << std::endl;
   if(a>b)  {
     return a - (abs(high - low) * percent);
   } else {
@@ -49,9 +47,6 @@ void vlib::two::spin_turn(int x, int y) {
 
   left().spin(vex::directionType::rev, tween(percent, 100*l[low], 100*l[high]), vex::velocityUnits::pct);
   right().spin(vex::directionType::rev, tween(percent, 100*r[low], 100*r[high]), vex::velocityUnits::pct);  
-  std::cout << "angle: " << joystickAngle(x,y) << "deg" << std::endl;
-  std::cout << "percent: " << percent << std::endl;
-  std::cout << "------" << std::endl;
 }
 
 void vlib::two::stop() {
