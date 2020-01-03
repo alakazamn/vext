@@ -26,20 +26,32 @@ void vlib::two::turn(int x, int y) {
 }
 
 double joystickAngle(int x, int y) {
-  return atan2(x,y) >= 0 ? atan2(x,y) * 180 / 3.14159 : 360 + (atan2(x,y) * 180 / 3.14159);
+  return atan2(y,x) >= 0 ? atan2(y,x) * 180 / 3.14159 : 360 + (atan2(y,x) * 180 / 3.14159);
 }
-double tween(double percent, double low, double high) {
-  return low + (high - low) * percent;
+double tween(double percent, double a, double b) {
+  double low = fmin(a,b);
+  double high = fmax(a,b);
+  std::cout << high << " - " << low << std::endl;
+  std::cout << a + (abs(high - low) * percent) << std::endl;
+  if(a>b)  {
+    return a - (abs(high - low) * percent);
+  } else {
+    return a + (abs(high - low) * percent);
+  }
 }
 void vlib::two::spin_turn(int x, int y) {
-  const double l[] = {1,1,1,0.7,-1,-0.7,-1,-1,-1,1};
-  const double r[] = {-1,0.7,1,1,1,-1,-1,-0.7,-1};
+  const double l[] = {1,1,1,0.7,-1,-0.7,-1,-1,1};
+  const double r[] = {-1,0.7,1,1,1,-1,-1,-0.7};
   double part = joystickAngle(x,y) / 45;
   const int low = floor(part);
   const int high = ceil(part);
   const double percent = (joystickAngle(x,y) - low*45) / 45.0;
-  right().spin(vex::directionType::fwd, 100*tween(percent, r[low], r[high]), vex::velocityUnits::pct);
-  left().spin(vex::directionType::rev, 100*tween(percent, l[low], l[high]), vex::velocityUnits::pct);
+
+  left().spin(vex::directionType::rev, tween(percent, 100*l[low], 100*l[high]), vex::velocityUnits::pct);
+  right().spin(vex::directionType::rev, tween(percent, 100*r[low], 100*r[high]), vex::velocityUnits::pct);  
+  std::cout << "angle: " << joystickAngle(x,y) << "deg" << std::endl;
+  std::cout << "percent: " << percent << std::endl;
+  std::cout << "------" << std::endl;
 }
 
 void vlib::two::stop() {
