@@ -2,6 +2,7 @@
 #include "vex_units.h"
 #include <cmath>
 #include <iostream>
+#include <math.h>       /* atan2 */
 
 /*
  * Implementation of vlib::two methods
@@ -25,7 +26,7 @@ void vlib::two::turn(int x, int y) {
 }
 
 void vlib::two::spin_turn(int x, int y) {
-  //
+
 }
 
 void vlib::two::stop() {

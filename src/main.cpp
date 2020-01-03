@@ -107,7 +107,7 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
-  bot.setMovesWhileTurns(false);
+  bot.setMovesWhileTurns(true);
   bot.bind(Controller.Axis4, Controller.Axis3);
   axs(100, Controller.Axis2, arm);
   btn(75, Controller.ButtonL2, Controller.ButtonR1,
