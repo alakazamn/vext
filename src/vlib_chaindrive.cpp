@@ -3,8 +3,8 @@
 #include "vex_units.h"
 #include <iostream>
 /*
-* Implementation of vlib::chaindrive methods
-*/
+ * Implementation of vlib::chaindrive methods
+ */
 
 void vlib::chaindrive::setMovesWhileTurns(bool val) { moveWhileTurning = val; }
 
@@ -37,7 +37,11 @@ void vlib::chaindrive::stop() { motors.stop(); }
 void vlib::chaindrive::bind(vex::controller::axis x, vex::controller::axis y) {
   static auto moveUpdate = [&] {
     if (direction(y) != 0 && direction(x) == 0) { // axis 1 and axis 3
-      straight(y.position());
+      if (!getMovesWhileTurns()) {
+        straight(y.position());
+      } else {
+        spin_turn(x.position(), y.position());
+      }
     } else if (direction(x) != 0) {
       if (getMovesWhileTurns()) {
         spin_turn(x.position(), y.position());
