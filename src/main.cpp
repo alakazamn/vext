@@ -154,7 +154,7 @@ void GUIScreenBlue()
   }
 }
 void pre_auton(void) {
-  // All activities that occur before the competition starts
+  /*// All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
   Brain.Screen.setPenColor(vex::color::black);
   Brain.Screen.setFillColor(vex::color::blue);
@@ -179,7 +179,10 @@ void pre_auton(void) {
       GUIScreenRed();
       break;
     }
-  }
+  }*/
+  auto test = vlib::VNode(vex::color::blue);
+
+  vlib::GUI::instance()->add(&test);
 }
 
 /*---------------------------------------------------------------------------*/
