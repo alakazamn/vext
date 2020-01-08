@@ -51,22 +51,135 @@ int alliance = 0;
 /*  function is only called once after the cortex has been powered on and    */
 /*  not every time that the robot is disabled.                               */
 /*---------------------------------------------------------------------------*/
-
+void GUIScreenRed()
+{
+  Brain.Screen.setFillColor(vex::color::red);
+  Brain.Screen.setPenColor(vex::color::black);
+  Brain.Screen.clearScreen();
+  Brain.Screen.drawRectangle(0,0,240,136);
+  Brain.Screen.drawRectangle(0,136,240,136);
+  Brain.Screen.drawRectangle(241,0,240,136);
+  Brain.Screen.drawRectangle(241,136,240,136);
+  //need to addd text
+  vex::task::sleep(5000);
+  while (true) 
+  {
+    if (Brain.Screen.yPosition() < 136){
+    if (Brain.Screen.xPosition() < 240) {
+      Brain.Screen.clearScreen();
+      Brain.Screen.print("Auton 1 Selected");
+      //add auton value here
+      alliance = 5;
+      break;
+    }
+    else{
+           Brain.Screen.clearScreen();
+      Brain.Screen.print("Auton 2 Selected");
+       //add other auton value here
+       alliance = 6;
+       break;
+    }
+     
+  }
+  if (Brain.Screen.yPosition() > 136)
+  {
+    if (Brain.Screen.xPosition() < 240)
+    {
+           Brain.Screen.clearScreen();
+      Brain.Screen.print("Auton 3 Selected");
+      //add auton value
+      alliance = 7;
+      break;
+    }
+    else if (Brain.Screen.xPosition() > 240)
+    {
+           Brain.Screen.clearScreen();
+      Brain.Screen.print("Auton 4 Selected");
+      //add auton value
+      alliance = 8;
+      break;
+    }
+  }
+  }
+  
+}
+void GUIScreenBlue()
+{
+  Brain.Screen.clearScreen();
+  Brain.Screen.setFillColor(vex::color::blue);
+  Brain.Screen.drawRectangle(0,0,240,136);
+  Brain.Screen.drawRectangle(0,136,240,136);
+  Brain.Screen.drawRectangle(241,0,240,136);
+  Brain.Screen.drawRectangle(241,136,240,136);
+  //need to add text
+  vex::task::sleep(5000);
+  while (true)
+  {
+   if (Brain.Screen.yPosition() < 136){
+    if (Brain.Screen.xPosition() < 240) {
+           Brain.Screen.clearScreen();
+      Brain.Screen.print("Auton 1 Selected");
+      alliance = 1;
+      //add auton value here
+      break;
+    }
+    else{
+           Brain.Screen.clearScreen();
+      Brain.Screen.print("Auton 2 Selected");
+      alliance = 2;
+       //add other auton value here
+      break;
+    }
+     
+  }
+  if (Brain.Screen.yPosition() > 136)
+  {
+    if (Brain.Screen.xPosition() < 240)
+    {
+           Brain.Screen.clearScreen();
+      Brain.Screen.print("Auton 3 Selected");
+      //add auton value
+      alliance = 3;
+      break;
+    }
+    else if (Brain.Screen.xPosition() > 240)
+    {
+           Brain.Screen.clearScreen();
+      Brain.Screen.print("Auton 4 Selected");
+      //add auton value
+      alliance = 4;
+      break;
+    }
+  }
+  }
+}
 void pre_auton(void) {
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
-  while(true) {
-    if(Controller.ButtonLeft.pressing()) {
-      alliance = 0;
-      Brain.Screen.print("Run Auton");
-      return;
-    } else if(Controller.ButtonRight.pressing()) {
-      alliance = 1;
-      Brain.Screen.print("Don't run auton");
-      return;
+  Brain.Screen.setPenColor(vex::color::black);
+  Brain.Screen.setFillColor(vex::color::blue);
+  Brain.Screen.drawRectangle(0,0,240,272);
+  Brain.Screen.setFillColor(vex::color::red);
+  Brain.Screen.drawRectangle(241,0,240,272);
+  Brain.Screen.setFont(monoXL);
+  Brain.Screen.printAt(320,125,"Red");
+  Brain.Screen.setFillColor(vex::color::blue);
+  Brain.Screen.printAt(75,125,"Blue");
+  while(true)
+  {
+    int x = Brain.Screen.xPosition();
+    int y = Brain.Screen.yPosition();
+    if (x <=240 && y > 0)
+    {
+      GUIScreenBlue();
+      break;
+    }
+    if (x > 240 && y > 0)
+    {
+      GUIScreenRed();
+      break;
     }
   }
-  return;
 }
 
 /*---------------------------------------------------------------------------*/
