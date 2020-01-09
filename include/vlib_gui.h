@@ -1,4 +1,5 @@
 #import "vex.h"
+#include <cstddef>
 #include <list> 
 
 #ifndef VLIB_GUI_H
@@ -20,7 +21,7 @@ namespace vlib {
 
 class VNode {
   private:
-
+    int lastX, lastY, lastWidth, lastHeight;
     vex::color backgroundColor = vex::color::black;
     VNode *parent;
     LayoutType layout;
@@ -30,8 +31,7 @@ class VNode {
     void removeChild(VNode *node) {
       children.remove(node);
     }
-  
-  public:
+  protected:
     template <typename... Args>
     VNode( LayoutType layout) {
       this->layout = layout;
@@ -40,6 +40,40 @@ class VNode {
       this->backgroundColor = backgroundColor;
       this->layout = grid;
     }
+    bool bounded(int touchX, int touchY, int x, int y, int height, int width) {
+      return (touchX >= x && touchY >= y && touchX <= x+width && touchY <= x+height);
+    }
+    VNode* elementAt(int x, int y) {
+      int nodes = children.size();
+      auto l_front = children.begin();
+      for(int i = 0; i<nodes; i++) {
+        std::advance(l_front, 1);
+        auto elem = (*l_front);
+        if(bounded(x, y, elem->lastX, elem->lastY, elem->lastHeight, elem->lastWidth)) {
+          return elem;
+        }
+      }
+      return nullptr;
+    }
+    void onPress() {
+        vex::brain Brain;
+        int xPos = Brain.Screen.xPosition();
+        int yPos = Brain.Screen.yPosition();
+        auto found = elementAt(xPos, yPos);
+        if(found != nullptr) {
+          found->onPress();
+        }
+    }
+    void onRelease() {
+        vex::brain Brain;
+        int xPos = Brain.Screen.xPosition();
+        int yPos = Brain.Screen.yPosition();
+        auto found = elementAt(xPos, yPos);
+        if(found != nullptr) {
+          found->onRelease();
+        }
+    }
+  public:
     void add(VNode *node) {
       children.push_back(node);
     }
@@ -56,11 +90,15 @@ class VNode {
       render(0,0, 480, 272);
     }
     void render(int x, int y, int width, int height) {
+      lastX = x;
+      lastY = y;
+      lastWidth = width;
+      lastHeight = height;
       vex::brain Brain;
       Brain.Screen.setFillColor(backgroundColor);
       Brain.Screen.drawRectangle(x, y, width, height);
       int nodes = children.size();
-      if(nodes == 0) {
+      if(nodes == 1) {
         children.front()->render(x, y, width, height);
       } else {
         auto l_front = children.begin();
@@ -70,38 +108,62 @@ class VNode {
         }
       }
     }
-    void onPress() {
-      //need to write method to distribute presses to child elements
+};
+class Button : public VNode {
+  protected:
+  void onPress() {
+    VNode::onPress();
+    //do custom action;
+    //set background color darker
+  }
+  void onRelease() {
+    VNode::onRelease();
+    //do custom action
+    //set background color darker
+  }
+  public:
+    template <typename... Args>
+    Button(LayoutType layout) : VNode( layout) {
+
     }
-    void onRelease() {
+    Button (vex::color backgroundColor) : VNode(backgroundColor) {
 
     }
 };
 
+//https://stackoverflow.com/questions/1008019/c-singleton-design-pattern/1008289#1008289
+
 class GUI : public VNode {
 private: 
-  static GUI *gui;
+  GUI() : VNode(grid) {}
 
   GUI(LayoutType type) : VNode(type) {}
   ~GUI() {}
 
-public:
-  static GUI* instance() {
-    if(gui == nullptr) {
-      //initialize
-      GUI newGUI = GUI(grid);
-      gui = &newGUI;
-
+  static int renderLoop() {
+    while(true) {
       vex::brain Brain;
-      Brain.Screen.pressed([] {
-        gui->onPress();
-      });
-
-      Brain.Screen.released([] {
-        gui->onRelease();
-      });
+      Brain.Screen.clearScreen();
+      instance().render();
+      vex::task::sleep(15);
     }
+  }
+public:
+  static GUI& instance() {
+    static GUI gui;
     return gui;
+  }
+  static vex::task init() {
+    vex::brain Brain;
+    Brain.Screen.pressed([] {
+      instance().onPress();
+    });
+
+    Brain.Screen.released([] {
+      instance().onRelease();
+    });
+    static vex::task rendering(renderLoop);
+    return rendering;
   }
 };
 

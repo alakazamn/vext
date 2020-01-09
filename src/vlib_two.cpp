@@ -11,16 +11,16 @@
 void vlib::two::straight(int power) {
   vex::directionType direction =
       power < 0 ? vex::directionType::fwd : vex::directionType::rev;
-  left().spin(direction, abs(power), vex::percentUnits::pct);
-  right().spin(direction, abs(power), vex::percentUnits::pct);
+  left().spin(direction, std::abs(power), vex::percentUnits::pct);
+  right().spin(direction, std::abs(power), vex::percentUnits::pct);
 }
 
 void vlib::two::turn(int x, int y) {
   if (x < -10) {
-    left().spin(vex::directionType::fwd, abs(x)*.8, vex::velocityUnits::pct);
+    left().spin(vex::directionType::fwd, std::abs(x)*.8, vex::velocityUnits::pct);
     right().spin(vex::directionType::fwd, x*.8, vex::velocityUnits::pct);
   } else if (x > 10) {
-    left().spin(vex::directionType::fwd, abs(x) * -.8, vex::velocityUnits::pct);
+    left().spin(vex::directionType::fwd, std::abs(x) * -.8, vex::velocityUnits::pct);
     right().spin(vex::directionType::fwd, x*.8, vex::velocityUnits::pct);
   }
 }
@@ -32,9 +32,9 @@ double tween(double percent, double a, double b) {
   double low = fmin(a,b);
   double high = fmax(a,b);
   if(a>b)  {
-    return a - (abs(high - low) * percent);
+    return a - (std::abs(high - low) * percent);
   } else {
-    return a + (abs(high - low) * percent);
+    return a + (std::abs(high - low) * percent);
   }
 }
 void vlib::two::spin_turn(int x, int y) {

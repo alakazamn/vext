@@ -15,7 +15,7 @@
 #include "vlib.h"
 #include <future>
 
-using namespace vex;
+using namespace vlib;
 
 // A global instance of vex::brain used for printing to the V5 brain screen
 vex::brain Brain;
@@ -180,9 +180,15 @@ void pre_auton(void) {
       break;
     }
   }*/
-  auto test = vlib::VNode(vex::color::blue);
+  GUI::init();
+  
+  auto test1 = Button(vex::color::blue);
 
-  vlib::GUI::instance()->add(&test);
+  GUI::instance().add(&test1);
+
+  auto test2 = Button(vex::color::red);
+
+  GUI::instance().add(&test2);
 }
 
 /*---------------------------------------------------------------------------*/
