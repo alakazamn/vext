@@ -1,6 +1,8 @@
 #import "vex.h"
 #include <cstddef>
-#include <list> 
+#include <vector> 
+#include <iostream>
+#include <algorithm>
 
 #ifndef VLIB_GUI_H
 #define VLIB_GUI_H
@@ -21,16 +23,20 @@ namespace vlib {
 
 class VNode {
   private:
-    int lastX, lastY, lastWidth, lastHeight;
+    int lastX, lastY, lastWidth, lastHeight, drawn = false;
     vex::color backgroundColor = vex::color::black;
     VNode *parent;
     LayoutType layout;
   
-    std::list <VNode*> children;
+    std::vector <VNode> children = {};
 
-    void removeChild(VNode *node) {
-      children.remove(node);
-    }
+    void removeChild(VNode node) {
+      for(std::vector<VNode>::iterator it = children.begin(); it<children.end();it++) {
+        if(&*it == &node) {
+         children.erase(it);
+        }
+      }
+  }
   protected:
     template <typename... Args>
     VNode( LayoutType layout) {
@@ -40,84 +46,86 @@ class VNode {
       this->backgroundColor = backgroundColor;
       this->layout = grid;
     }
-    bool bounded(int touchX, int touchY, int x, int y, int height, int width) {
-      return (touchX >= x && touchY >= y && touchX <= x+width && touchY <= x+height);
+    bool bounded(int touchX, int touchY, int x, int y, int width, int height) {
+      return (touchX >= x && touchY >= y && touchX <= x+width && touchY <= y+height);
     }
-    VNode* elementAt(int x, int y) {
-      int nodes = children.size();
-      auto l_front = children.begin();
-      for(int i = 0; i<nodes; i++) {
-        std::advance(l_front, 1);
-        auto elem = (*l_front);
-        if(bounded(x, y, elem->lastX, elem->lastY, elem->lastHeight, elem->lastWidth)) {
-          return elem;
+    VNode elementAt(int x, int y) {
+      vex::brain Brain;
+      for(int i = 0; i<children.size();i++) {
+        auto it = children[i];
+        if(it.drawn && bounded(x, y, it.lastX, it.lastY, it.lastWidth, it.lastHeight)) {
+          Brain.Screen.clearScreen();
+          Brain.Screen.print("Button pressed");
+          return children[i];
         }
       }
-      return nullptr;
+      return VNode(grid);
     }
-    void onPress() {
-        vex::brain Brain;
-        int xPos = Brain.Screen.xPosition();
-        int yPos = Brain.Screen.yPosition();
-        auto found = elementAt(xPos, yPos);
-        if(found != nullptr) {
-          found->onPress();
-        }
+    void onPress(int x, int y) {
+        vex::brain Brain = vex::brain();
+        auto found = elementAt(x, y);
+        found.onPress(x,y);
     }
-    void onRelease() {
+    void onRelease(int x, int y) {
         vex::brain Brain;
-        int xPos = Brain.Screen.xPosition();
-        int yPos = Brain.Screen.yPosition();
-        auto found = elementAt(xPos, yPos);
-        if(found != nullptr) {
-          found->onRelease();
+        auto found = elementAt(x, y);
+        found.onRelease(x,y);
+    }
+    void render() {
+     draw(0,0, 480, 240);
+    }
+    void draw(int x, int y, int width, int height) {
+      vex::brain Brain;
+
+      lastX = x;
+      lastY = y;
+      lastWidth = width;
+      lastHeight = height;
+      drawn = true;
+      Brain.Screen.setFillColor(backgroundColor);
+      Brain.Screen.drawRectangle(x, y, width, height);
+      if(children.size() == 1) {
+        children.front().draw(x, y, width, height);
+      } else {
+        int numRows = std::ceil(children.size()/2.0);
+        int x = 0;
+        int y = 0;
+        for(std::vector<VNode>::iterator it = children.begin(); it<children.end();it++) {
+          it->draw(x % 2 == 0 ? 0 : 240, y, width/2, 240/numRows);
+          if(x%2 == 1) {
+            y+=120;
+          }
+          x++;
         }
+      }
     }
   public:
-    void add(VNode *node) {
+    void add(VNode node) {
       children.push_back(node);
     }
 
     void remove() {
       if(parent != nullptr) {
-        parent->removeChild(this);
+        parent->removeChild(*this);
       }
     }
     void setBackground(vex::color color) {
       this->backgroundColor = color;
     }
-    void render() {
-      render(0,0, 480, 272);
-    }
-    void render(int x, int y, int width, int height) {
-      lastX = x;
-      lastY = y;
-      lastWidth = width;
-      lastHeight = height;
-      vex::brain Brain;
-      Brain.Screen.setFillColor(backgroundColor);
-      Brain.Screen.drawRectangle(x, y, width, height);
-      int nodes = children.size();
-      if(nodes == 1) {
-        children.front()->render(x, y, width, height);
-      } else {
-        auto l_front = children.begin();
-        for(int i = 0; i<nodes; i++) {
-          std::advance(l_front, 1);
-          (*l_front)->render(i % 2 == 0 ? 0 : 240, i * 136, width/2, 136);
-        }
-      }
-    }
 };
 class Button : public VNode {
   protected:
-  void onPress() {
-    VNode::onPress();
+  void onPress(int x, int y) {
+    vex::brain Brain;
+    Brain.Screen.clearScreen();
+    Brain.Screen.print("Button pressed");
+    
+    VNode::onPress(x, y);
     //do custom action;
     //set background color darker
   }
-  void onRelease() {
-    VNode::onRelease();
+  void onRelease(int x, int y) {
+    VNode::onRelease(x, y);
     //do custom action
     //set background color darker
   }
@@ -140,30 +148,30 @@ private:
   GUI(LayoutType type) : VNode(type) {}
   ~GUI() {}
 
-  static int renderLoop() {
-    while(true) {
-      vex::brain Brain;
-      Brain.Screen.clearScreen();
-      instance().render();
-      vex::task::sleep(15);
-    }
-  }
+static int redraw() {
+  vex::brain Brain;
+  Brain.Screen.clearScreen();
+  instance().render();
+  return 1;
+}
+
 public:
   static GUI& instance() {
     static GUI gui;
     return gui;
   }
-  static vex::task init() {
-    vex::brain Brain;
+  static void init() {
+    static vex::brain Brain;
     Brain.Screen.pressed([] {
-      instance().onPress();
+       instance().onPress(Brain.Screen.xPosition(), Brain.Screen.yPosition());
     });
 
     Brain.Screen.released([] {
-      instance().onRelease();
+      instance().onRelease(Brain.Screen.xPosition(), Brain.Screen.yPosition());
     });
-    static vex::task rendering(renderLoop);
-    return rendering;
+  }
+  static void update() {
+    static vex::task rendering(redraw);
   }
 };
 

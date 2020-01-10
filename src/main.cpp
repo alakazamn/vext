@@ -21,17 +21,18 @@ using namespace vlib;
 vex::brain Brain;
 vex::controller Controller;
 
-vex::motor LeftArm(vex::PORT6, true);
-vex::motor RightArm(vex::PORT16);
+vex::motor LeftArm(vex::PORT19, true);
+vex::motor RightArm(vex::PORT20);
 vlib::two arm = vlib::two(LeftArm, RightArm);
 
-vex::motor LeftFlapper(vex::PORT5, true);
-vex::motor RightFlapper(vex::PORT15);
+vex::motor LeftFlapper(vex::PORT9, true);
+vex::motor RightFlapper(vex::PORT10);
 vlib::two intake = vlib::two(LeftFlapper, RightFlapper);
 
-vex::motor LeftRamp(vex::PORT10, true);
-vex::motor RightRamp(vex::PORT20);
+vex::motor LeftRamp(vex::PORT7, true);
+vex::motor RightRamp(vex::PORT3);
 vlib::two ramp = vlib::two(LeftRamp, RightRamp);
+
 
 // A global instance of vex::competition
 vex::competition Competition;
@@ -184,11 +185,17 @@ void pre_auton(void) {
   
   auto test1 = Button(vex::color::blue);
 
-  GUI::instance().add(&test1);
-
+  GUI::instance().add(test1);
+  
   auto test2 = Button(vex::color::red);
 
-  GUI::instance().add(&test2);
+  GUI::instance().add(test2);
+  
+  auto test3 = Button(vex::color::cyan);
+
+  GUI::instance().add(test3);
+  GUI::update();
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -234,7 +241,7 @@ void usercontrol(void) {
   axs(100, Controller.Axis2, arm);
   btn(75, Controller.ButtonL2, Controller.ButtonR1,
       intake);
-  btn(60, Controller.ButtonUp, Controller.ButtonDown, ramp);
+  btn(100, Controller.ButtonUp, Controller.ButtonDown, ramp);
 
   Controller.ButtonL1.pressed([] { intake.straight(10); });
   Controller.ButtonL1.released([] { intake.stop(); });
