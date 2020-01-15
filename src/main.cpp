@@ -23,23 +23,22 @@ vex::brain Brain;
 vex::controller Controller;
 vex::competition Competition;
 
-motor Lift = motor(PORT5, gearSetting::ratio18_1, true); //ramp
-motor tower = motor(PORT1, gearSetting::ratio6_1, false);
+vext::motor ramp(PORT5, gearSetting::ratio18_1, true); // ramp
+vext::motor tower(PORT1, gearSetting::ratio6_1, false);
 
-vex::motor LeftFlapper(vex::PORT3, true);
-vex::motor RightFlapper(vex::PORT8);
-vext::motors intake = vext::motors(LeftFlapper, RightFlapper);
+vext::motor IntakeA(vex::PORT3, gearSetting::ratio18_1, true);
+vext::motor IntakeB(vex::PORT8, gearSetting::ratio18_1);
+vext::motors intake = vext::motors(IntakeA, IntakeB);
 
-motor LeftMotor = motor(PORT19, gearSetting::ratio18_1, true);
-motor RightMotor = motor(PORT12, gearSetting::ratio18_1, false);
-motor LeftMotor2 = motor(PORT20, gearSetting::ratio18_1, true);
-motor RightMotor2 = motor(PORT11, gearSetting::ratio18_1, false);
+vext::motor LeftMotor(PORT19, gearSetting::ratio18_1, true);
+vext::motor RightMotor(PORT12, gearSetting::ratio18_1, false);
+vext::motor LeftMotor2(PORT20, gearSetting::ratio18_1, true);
+vext::motor RightMotor2(PORT11, gearSetting::ratio18_1, false);
 
 auto bot = vext::fwd(LeftMotor, LeftMotor2, RightMotor, RightMotor2);
 
 static int speedMode = 2;
 int alliance = 2;
-
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -52,27 +51,23 @@ int alliance = 2;
 /*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
-  while(true) {
-    if(Controller.ButtonY.pressing()) {
+  while (true) {
+    if (Controller.ButtonY.pressing()) {
       alliance = 0;
       Brain.Screen.clearScreen();
       Brain.Screen.print("Red Alliance");
       return;
-    } else if(Controller.ButtonA.pressing()) {
+    } else if (Controller.ButtonA.pressing()) {
       alliance = 1;
       Brain.Screen.clearScreen();
       Brain.Screen.print("Blue Alliance");
       return;
-    }
-    else if(Controller.ButtonB.pressing())
-    {
+    } else if (Controller.ButtonB.pressing()) {
       alliance = 2;
       Brain.Screen.clearScreen();
       Brain.Screen.print("1pt");
       return;
-    }
-    else if (Controller.ButtonX.pressing())
-    {
+    } else if (Controller.ButtonX.pressing()) {
       alliance = 3;
       Brain.Screen.print("deplohy");
       return;
@@ -91,12 +86,11 @@ void pre_auton(void) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
-void autonomous(void)
- {
-  //ramp.straight(100);
+void autonomous(void) {
+  // ramp.straight(100);
   // basic 4pt auton
-  //blue
-  if(alliance == 0) {
+  // blue
+  if (alliance == 0) {
     bot.moveBy(52, 35);
     intake.stop();
     bot.spinBy(-145, 20);
@@ -104,7 +98,7 @@ void autonomous(void)
     ramp.straight(200);
     bot.moveBy(-20, 100);
   } else if (alliance == 1) {
-    //red
+    // red
     bot.moveBy(52, 35);
     intake.stop();
     bot.spinBy(145, 20);
@@ -114,8 +108,7 @@ void autonomous(void)
     bot.moveBy(-20, 100);
   }
 
-  else if (alliance ==  2)
-  {
+  else if (alliance == 2) {
     bot.moveBy(-60, 20);
     vex::task::sleep(1000);
     bot.moveBy(50, 20);
@@ -123,30 +116,29 @@ void autonomous(void)
   }
 }
 
+void printScrn(const char *format) {
+  Controller.Screen.clearScreen();
+  Controller.Screen.setCursor(1, 1);
+  Controller.Screen.print(format);
+}
 void updateSpeedMode(int speedMode) {
-   switch(speedMode) {
-     case 0:
-         Controller.Screen.clearScreen();
-         Controller.Screen.setCursor(1,1);
-         Controller.Screen.print("Stack Mode 50");
-         Controller.rumble(".");
-         bot.setMaxTorque(50, percentUnits::pct);
-       break;
-     case 1:
-         Controller.Screen.clearScreen();
-         Controller.Screen.setCursor(1,1);
-         Controller.Screen.print("Move Mode 75");
-         Controller.rumble("..");
-         bot.setMaxTorque(75, percentUnits::pct);
-         break;
-     case 2:
-         Controller.Screen.clearScreen();
-         Controller.Screen.setCursor(1,1);
-         Controller.Screen.print("Maximum Overdrive 100");
-         Controller.rumble("-");
-         bot.setMaxTorque(100, percentUnits::pct);
-         break;
-   }
+  switch (speedMode) {
+  case 0:
+    printScrn("Stack Mode 50");
+    Controller.rumble(".");
+    bot.setMaxTorque(50, percentUnits::pct);
+    break;
+  case 1:
+    printScrn("Move Mode 75");
+    Controller.rumble("..");
+    bot.setMaxTorque(75, percentUnits::pct);
+    break;
+  case 2:
+    printScrn("Maximum Overdrive 100");
+    Controller.rumble("-");
+    bot.setMaxTorque(100, percentUnits::pct);
+    break;
+  }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -161,32 +153,30 @@ void updateSpeedMode(int speedMode) {
 
 void usercontrol(void) {
   bot.setMovesWhileTurns(true);
-  bot.bind(Controller.Axis4, Controller.Axis3);
-  axs(100, Controller.Axis2, arm);
-  btn(100, Controller.ButtonL2, Controller.ButtonR2,
-      intake);
+  bot.bind(Controller.Axis1, Controller.Axis3); // Bind bot control to axis
+                                                // (X,Y)
+  btn(100, Controller.ButtonR1, Controller.ButtonL1,
+      intake); // Bind R1 and L1 to the intake
   btn(100, Controller.ButtonX, Controller.ButtonY, tower);
 
-  Controller.ButtonL1.pressed([] { intake.straight(100); });
-  Controller.ButtonL1.released([] { intake.stop(); });
-
-  Controller.ButtonR1.pressed([] { intake.straight(-100); });
-  Controller.ButtonR1.released([] { intake.stop(); });
-
-   Controller.ButtonLeft.pressed([] {
-    speedMode = speedMode != 0 ? speedMode-1 : 2;
+  Controller.ButtonLeft.pressed([] {
+    speedMode = speedMode != 0 ? speedMode - 1 : 2;
     updateSpeedMode(speedMode);
   });
   Controller.ButtonRight.pressed([] {
-    speedMode = speedMode != 2 ? speedMode+1 : 0;
+    speedMode = speedMode != 2 ? speedMode + 1 : 0;
     updateSpeedMode(speedMode);
   });
 
-
+  while (true) {
+    if (Controller.ButtonUp.pressing()) {
+      ramp.spin(directionType::fwd, Controller.Axis2.value(),
+                velocityUnits::pct);
+    } else {
+      ramp.stop((brakeType::hold));
+    }
+  }
 }
-
-
-
 
 //
 // Main will set up the competition functions and callbacks.
@@ -199,7 +189,5 @@ int main() {
 
   // Run the pre-autonomous function.
   pre_auton();
-  Controller.ButtonLeft.pressed([] {
-    autonomous();
-  });
+  Controller.ButtonLeft.pressed([] { autonomous(); });
 }

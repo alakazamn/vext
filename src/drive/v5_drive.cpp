@@ -6,7 +6,7 @@
 #include <math.h>       /* atan2 */
 
 /*
- * Implementation of vlib::two methods
+ * Implementation of vlib::drive methods
  */
 
 bool moveWhileTurning = false;
