@@ -11,37 +11,35 @@
 #include <iostream>
 
 #include "vex_global.h"
+#include "vex_thread.h"
 #include "vex_units.h"
 #include "vlib.h"
 #include <future>
+#include <type_traits>
 
-using namespace vlib;
+using namespace vex;
 
-// A global instance of vex::brain used for printing to the V5 brain screen
 vex::brain Brain;
 vex::controller Controller;
-
-vex::motor LeftArm(vex::PORT19, true);
-vex::motor RightArm(vex::PORT20);
-vlib::two arm = vlib::two(LeftArm, RightArm);
-
-vex::motor LeftFlapper(vex::PORT9, true);
-vex::motor RightFlapper(vex::PORT10);
-vlib::two intake = vlib::two(LeftFlapper, RightFlapper);
-
-vex::motor LeftRamp(vex::PORT7, true);
-vex::motor RightRamp(vex::PORT3);
-vlib::two ramp = vlib::two(LeftRamp, RightRamp);
-
-
-// A global instance of vex::competition
 vex::competition Competition;
 
-auto bot = vlib::chaindrive(vex::PORT1, vex::PORT2);
+motor Lift = motor(PORT5, gearSetting::ratio18_1, true); //ramp
+motor tower = motor(PORT1, gearSetting::ratio6_1, false);
 
-int alliance = 0;
+vex::motor LeftFlapper(vex::PORT3, true);
+vex::motor RightFlapper(vex::PORT8);
+vext::motors intake = vext::motors(LeftFlapper, RightFlapper);
 
-// define your global instances of motors and other devices here
+motor LeftMotor = motor(PORT19, gearSetting::ratio18_1, true);
+motor RightMotor = motor(PORT12, gearSetting::ratio18_1, false);
+motor LeftMotor2 = motor(PORT20, gearSetting::ratio18_1, true);
+motor RightMotor2 = motor(PORT11, gearSetting::ratio18_1, false);
+
+auto bot = vext::fwd(LeftMotor, LeftMotor2, RightMotor, RightMotor2);
+
+static int speedMode = 2;
+int alliance = 2;
+
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -52,150 +50,35 @@ int alliance = 0;
 /*  function is only called once after the cortex has been powered on and    */
 /*  not every time that the robot is disabled.                               */
 /*---------------------------------------------------------------------------*/
-void GUIScreenRed()
-{
-  Brain.Screen.setFillColor(vex::color::red);
-  Brain.Screen.setPenColor(vex::color::black);
-  Brain.Screen.clearScreen();
-  Brain.Screen.drawRectangle(0,0,240,136);
-  Brain.Screen.drawRectangle(0,136,240,136);
-  Brain.Screen.drawRectangle(241,0,240,136);
-  Brain.Screen.drawRectangle(241,136,240,136);
-  //need to addd text
-  vex::task::sleep(5000);
-  while (true) 
-  {
-    if (Brain.Screen.yPosition() < 136){
-    if (Brain.Screen.xPosition() < 240) {
-      Brain.Screen.clearScreen();
-      Brain.Screen.print("Auton 1 Selected");
-      //add auton value here
-      alliance = 5;
-      break;
-    }
-    else{
-           Brain.Screen.clearScreen();
-      Brain.Screen.print("Auton 2 Selected");
-       //add other auton value here
-       alliance = 6;
-       break;
-    }
-     
-  }
-  if (Brain.Screen.yPosition() > 136)
-  {
-    if (Brain.Screen.xPosition() < 240)
-    {
-           Brain.Screen.clearScreen();
-      Brain.Screen.print("Auton 3 Selected");
-      //add auton value
-      alliance = 7;
-      break;
-    }
-    else if (Brain.Screen.xPosition() > 240)
-    {
-           Brain.Screen.clearScreen();
-      Brain.Screen.print("Auton 4 Selected");
-      //add auton value
-      alliance = 8;
-      break;
-    }
-  }
-  }
-  
-}
-void GUIScreenBlue()
-{
-  Brain.Screen.clearScreen();
-  Brain.Screen.setFillColor(vex::color::blue);
-  Brain.Screen.drawRectangle(0,0,240,136);
-  Brain.Screen.drawRectangle(0,136,240,136);
-  Brain.Screen.drawRectangle(241,0,240,136);
-  Brain.Screen.drawRectangle(241,136,240,136);
-  //need to add text
-  vex::task::sleep(5000);
-  while (true)
-  {
-   if (Brain.Screen.yPosition() < 136){
-    if (Brain.Screen.xPosition() < 240) {
-           Brain.Screen.clearScreen();
-      Brain.Screen.print("Auton 1 Selected");
-      alliance = 1;
-      //add auton value here
-      break;
-    }
-    else{
-           Brain.Screen.clearScreen();
-      Brain.Screen.print("Auton 2 Selected");
-      alliance = 2;
-       //add other auton value here
-      break;
-    }
-     
-  }
-  if (Brain.Screen.yPosition() > 136)
-  {
-    if (Brain.Screen.xPosition() < 240)
-    {
-           Brain.Screen.clearScreen();
-      Brain.Screen.print("Auton 3 Selected");
-      //add auton value
-      alliance = 3;
-      break;
-    }
-    else if (Brain.Screen.xPosition() > 240)
-    {
-           Brain.Screen.clearScreen();
-      Brain.Screen.print("Auton 4 Selected");
-      //add auton value
-      alliance = 4;
-      break;
-    }
-  }
-  }
-}
+
 void pre_auton(void) {
-  /*// All activities that occur before the competition starts
-  // Example: clearing encoders, setting servo positions, ...
-  Brain.Screen.setPenColor(vex::color::black);
-  Brain.Screen.setFillColor(vex::color::blue);
-  Brain.Screen.drawRectangle(0,0,240,272);
-  Brain.Screen.setFillColor(vex::color::red);
-  Brain.Screen.drawRectangle(241,0,240,272);
-  Brain.Screen.setFont(monoXL);
-  Brain.Screen.printAt(320,125,"Red");
-  Brain.Screen.setFillColor(vex::color::blue);
-  Brain.Screen.printAt(75,125,"Blue");
-  while(true)
-  {
-    int x = Brain.Screen.xPosition();
-    int y = Brain.Screen.yPosition();
-    if (x <=240 && y > 0)
-    {
-      GUIScreenBlue();
-      break;
+  while(true) {
+    if(Controller.ButtonY.pressing()) {
+      alliance = 0;
+      Brain.Screen.clearScreen();
+      Brain.Screen.print("Red Alliance");
+      return;
+    } else if(Controller.ButtonA.pressing()) {
+      alliance = 1;
+      Brain.Screen.clearScreen();
+      Brain.Screen.print("Blue Alliance");
+      return;
     }
-    if (x > 240 && y > 0)
+    else if(Controller.ButtonB.pressing())
     {
-      GUIScreenRed();
-      break;
+      alliance = 2;
+      Brain.Screen.clearScreen();
+      Brain.Screen.print("1pt");
+      return;
     }
-  }*/
-  GUI::init();
-  
-  auto test1 = Button(vex::color::blue);
-
-  GUI::instance().add(test1);
-  
-  auto test2 = Button(vex::color::red);
-
-  GUI::instance().add(test2);
-  
-  auto test3 = Button(vex::color::cyan);
-
-  GUI::instance().add(test3);
-  GUI::update();
-
+    else if (Controller.ButtonX.pressing())
+    {
+      alliance = 3;
+      Brain.Screen.print("deplohy");
+      return;
+    }
+  }
+  return;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -208,21 +91,62 @@ void pre_auton(void) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
-void autonomous(void) {
+void autonomous(void)
+ {
+  //ramp.straight(100);
   // basic 4pt auton
+  //blue
   if(alliance == 0) {
-    
-    bot.moveBy(85, 100);
-    arm.straight(100);
-    vex::task::sleep(2000);
-    intake.spin(vex::directionType::fwd, 100, vex::percentUnits::pct);
-    arm.straight(-100);
-    vex::task::sleep(2000);
-    arm.stop();
-    
-  } else {
-    
+    bot.moveBy(52, 35);
+    intake.stop();
+    bot.spinBy(-145, 20);
+    bot.moveBy(39, 20);
+    ramp.straight(200);
+    bot.moveBy(-20, 100);
+  } else if (alliance == 1) {
+    //red
+    bot.moveBy(52, 35);
+    intake.stop();
+    bot.spinBy(145, 20);
+    bot.moveBy(39, 20);
+    ramp.straight(200);
+    vex::this_thread::sleep_for(5000);
+    bot.moveBy(-20, 100);
   }
+
+  else if (alliance ==  2)
+  {
+    bot.moveBy(-60, 20);
+    vex::task::sleep(1000);
+    bot.moveBy(50, 20);
+    vex::task::sleep(1000);
+  }
+}
+
+void updateSpeedMode(int speedMode) {
+   switch(speedMode) {
+     case 0:
+         Controller.Screen.clearScreen();
+         Controller.Screen.setCursor(1,1);
+         Controller.Screen.print("Stack Mode 50");
+         Controller.rumble(".");
+         bot.setMaxTorque(50, percentUnits::pct);
+       break;
+     case 1:
+         Controller.Screen.clearScreen();
+         Controller.Screen.setCursor(1,1);
+         Controller.Screen.print("Move Mode 75");
+         Controller.rumble("..");
+         bot.setMaxTorque(75, percentUnits::pct);
+         break;
+     case 2:
+         Controller.Screen.clearScreen();
+         Controller.Screen.setCursor(1,1);
+         Controller.Screen.print("Maximum Overdrive 100");
+         Controller.rumble("-");
+         bot.setMaxTorque(100, percentUnits::pct);
+         break;
+   }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -239,16 +163,30 @@ void usercontrol(void) {
   bot.setMovesWhileTurns(true);
   bot.bind(Controller.Axis4, Controller.Axis3);
   axs(100, Controller.Axis2, arm);
-  btn(75, Controller.ButtonL2, Controller.ButtonR1,
+  btn(100, Controller.ButtonL2, Controller.ButtonR2,
       intake);
-  btn(100, Controller.ButtonUp, Controller.ButtonDown, ramp);
+  btn(100, Controller.ButtonX, Controller.ButtonY, tower);
 
-  Controller.ButtonL1.pressed([] { intake.straight(10); });
+  Controller.ButtonL1.pressed([] { intake.straight(100); });
   Controller.ButtonL1.released([] { intake.stop(); });
 
-  Controller.ButtonR2.pressed([] { intake.straight(-10); });
-  Controller.ButtonR2.released([] { intake.stop(); });
+  Controller.ButtonR1.pressed([] { intake.straight(-100); });
+  Controller.ButtonR1.released([] { intake.stop(); });
+
+   Controller.ButtonLeft.pressed([] {
+    speedMode = speedMode != 0 ? speedMode-1 : 2;
+    updateSpeedMode(speedMode);
+  });
+  Controller.ButtonRight.pressed([] {
+    speedMode = speedMode != 2 ? speedMode+1 : 0;
+    updateSpeedMode(speedMode);
+  });
+
+
 }
+
+
+
 
 //
 // Main will set up the competition functions and callbacks.
@@ -261,7 +199,7 @@ int main() {
 
   // Run the pre-autonomous function.
   pre_auton();
-  Controller.ButtonA.pressed([] {
+  Controller.ButtonLeft.pressed([] {
     autonomous();
   });
 }

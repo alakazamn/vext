@@ -4,18 +4,13 @@
 #include <iostream>
 #include <algorithm>
 
-#ifndef VLIB_GUI_H
-#define VLIB_GUI_H
+#ifndef VEXT_GUI_H
+#define VEXT_GUI_H
 
 /*-----------------------------------------------------------------------------*/
-/** @file    vlib_two.h
- * @brief   VEX provides a class called "motor_group" which allows a programmer
- *          to perform actions on multiple motors together, as if they were one.
- *          This class extends that functionality with actions specific to two
- *          motors, such as turning. It also provides the foundation for something
- *          like a chaindrive. 
- *          Use of the vlib_two class allows for easy controller binding using vlib's
- *          macros (btn or axs, found below).
+/** @file    v5_gui.h
+ * @brief   
+ *
  *//*---------------------------------------------------------------------------*/
 
 namespace vlib {
@@ -54,8 +49,6 @@ class VNode {
       for(int i = 0; i<children.size();i++) {
         auto it = children[i];
         if(it.drawn && bounded(x, y, it.lastX, it.lastY, it.lastWidth, it.lastHeight)) {
-          Brain.Screen.clearScreen();
-          Brain.Screen.print("Button pressed");
           return children[i];
         }
       }
