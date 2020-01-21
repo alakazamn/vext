@@ -1,0 +1,428 @@
+// To complete the VEXcode V5 Text project upgrade process, please follow the
+// steps below.
+// 
+// 1. You can use the Robot Configuration window to recreate your V5 devices
+//   - including any motors, sensors, 3-wire devices, and controllers.
+// 
+// 2. All previous code located in main.cpp has now been commented out. You
+//   will need to migrate this code to the new "int main" structure created
+//   below and keep in mind any new device names you may have set from the
+//   Robot Configuration window. 
+// 
+// If you would like to go back to your original project, a complete backup
+// of your original (pre-upgraded) project was created in a backup folder
+// inside of this project's folder.
+
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// ---- END VEXCODE CONFIGURED DEVICES ----
+
+#include "vex.h"
+#include "robot-config.h"
+#include "PIDControl.h"
+#include <iostream>
+using namespace vex;
+motor LeftMotor = motor(PORT19, gearSetting::ratio18_1, true);
+motor RightMotor = motor(PORT12, gearSetting::ratio18_1, false);
+motor LeftMotor2 = motor(PORT20, gearSetting::ratio18_1, true);
+motor RightMotor2 = motor(PORT11, gearSetting::ratio18_1, false);
+motor Intake1 = motor(PORT3, gearSetting::ratio6_1, true);
+motor Intake2 = motor(PORT8, gearSetting::ratio6_1, false);
+motor Lift = motor(PORT5, gearSetting::ratio6_1, true);
+motor Tower1 = motor(PORT1, gearSetting::ratio6_1, false);
+//motor Tower2 = motor(PORT10, gearSetting::ratio18_1, true);
+//vex::limit fullTower = limit(Brain.ThreeWirePort.A); 
+//vex::limit towerUp = limit(Brain.ThreeWirePort.B);
+controller Controller = controller(controllerType::primary);
+competition Competition;
+PIDControl move = PIDControl(1,0.5,0.3,10);
+
+static int alliance;
+static int fieldPosition;
+static int speedMode = 2;
+bool macroRunning = false;
+
+//Methods
+void wait(double miliseconds)
+{
+  task::sleep(miliseconds);
+}
+/*bool waitForRelease()
+{
+  if(Controller.ButtonLeft.pressing() && waitForLeftRelease == true)
+  {
+    wait(2000);
+    waitForLeftRelease = false;
+  }
+  return waitForLeftRelease;
+}*/
+void straight(double degrees, double speed, bool coast) //This method is used as a fast way to write in straights and the ability to coast is also given
+{
+  LeftMotor.resetRotation();
+  LeftMotor2.resetRotation();
+  RightMotor.resetRotation();
+  RightMotor2.resetRotation();
+  LeftMotor.startRotateTo(degrees,rotationUnits::deg,speed,velocityUnits::pct);
+  LeftMotor2.startRotateTo(degrees,rotationUnits::deg,speed,velocityUnits::pct);
+  RightMotor.startRotateTo(degrees,rotationUnits::deg,speed,velocityUnits::pct);
+  RightMotor2.rotateTo(degrees,rotationUnits::deg,speed,velocityUnits::pct);
+  if(coast==true)
+  {
+    LeftMotor.stop(brakeType::coast);
+    LeftMotor2.stop(brakeType::coast);
+    RightMotor.stop(brakeType::coast);
+    RightMotor2.stop(brakeType::coast);
+  }
+  while(LeftMotor.isSpinning()&&RightMotor.isSpinning())
+  {
+    wait(10);
+  }
+}
+void robotTurn(double degrees, double speed) //This method is used as a fast way to write in turns
+{
+  LeftMotor.resetRotation();
+  LeftMotor2.resetRotation();
+  RightMotor.resetRotation();
+  RightMotor2.resetRotation();
+  LeftMotor.startRotateTo(degrees,rotationUnits::deg,speed,velocityUnits::pct);
+  LeftMotor2.startRotateTo(degrees,rotationUnits::deg,speed,velocityUnits::pct);
+  RightMotor.rotateTo(-degrees,rotationUnits::deg,speed,velocityUnits::pct);
+  RightMotor2.rotateTo(-degrees,rotationUnits::deg,speed,velocityUnits::pct);
+  while(LeftMotor.isSpinning()&&RightMotor.isSpinning())
+  {
+    wait(10);
+  }
+}
+void towers(double degrees) //This method is used as a fast way to write in tower movements
+{
+  Tower1.resetRotation();
+  //Tower2.resetRotation();
+  Tower1.startRotateTo(degrees, rotationUnits::deg, 100, velocityUnits::pct); 
+  //Tower2.rotateTo(-degrees, rotationUnits::deg, 100, velocityUnits::pct);
+  Tower1.stop(brakeType::hold);
+  //Tower2.stop(brakeType::hold);
+}
+void bucketMode()
+{
+  Lift.resetRotation();
+  Lift.startRotateFor(2000,rotationUnits::deg,100,velocityUnits::pct);
+  Tower1.rotateFor(-200,rotationUnits::deg,100,velocityUnits::pct);
+}
+void rampDown() //This method is used in the auton to place the tower
+{
+  Lift.resetRotation();
+  Lift.rotateTo(5000, rotationUnits::deg, 100, velocityUnits::pct);
+  Intake1.startRotateFor(-2000, rotationUnits::deg, 50, velocityUnits::pct);
+  Intake2.startRotateFor(-2000, rotationUnits::deg, 50, velocityUnits::pct);
+  Lift.rotateFor(1000, rotationUnits::deg, 75, velocityUnits::pct);
+  //Lift.rotateFor(700, rotationUnits::deg, 50, velocityUnits::pct);
+}
+void deploy() //This method is used to deploy the ramp in the beginning of the match
+{
+  Lift.rotateTo(600,rotationUnits::deg,100,velocityUnits::pct);
+  Tower1.startRotateTo(-1100, rotationUnits::deg, 100, velocityUnits::pct);
+  Intake1.spin(directionType::rev, 100, velocityUnits::pct);
+  Intake2.spin(directionType::rev, 100, velocityUnits::pct);
+  Tower1.resetRotation();
+  Tower1.rotateTo(1100, rotationUnits::deg, 100, velocityUnits::pct); 
+  wait(100);
+  Tower1.stop(brakeType::hold);
+  //Tower2.stop(brakeType::hold);
+  Lift.startRotateTo(-600,rotationUnits::deg,100,velocityUnits::pct);
+  Intake1.stop();
+  Intake2.stop();
+  task::sleep(1000);
+}
+
+void pre_auton(void)
+{
+  /* ==============================================================================================
+  Begin auton selector code. Allows us to choose which autons to use before plugging into the field
+  ================================================================================================= */
+  Controller.Screen.clearScreen();
+  Controller.Screen.setCursor(1,1);
+  Controller.Screen.print("Blue Press A");
+  Controller.Screen.setCursor(2,1);
+  Controller.Screen.print("Red Press B");
+  while (true)
+  {
+    if (Controller.ButtonA.pressing())
+    {
+      alliance=0;
+      Controller.Screen.clearScreen();
+      Controller.Screen.setCursor(1,1);
+      Controller.Screen.print("Blue5L Press Left");
+      Controller.Screen.setCursor(2,1);
+      Controller.Screen.print("Blue1R Press Right");
+      Controller.Screen.setCursor(3,1);
+      Controller.Screen.print("Bypass Press X");
+      break;
+    }
+    else if (Controller.ButtonB.pressing())
+    {
+      alliance=1;
+      Controller.Screen.clearScreen();
+      Controller.Screen.setCursor(1,1);
+      Controller.Screen.print("Red5R Press Right");
+      Controller.Screen.setCursor(2,1);
+      Controller.Screen.print("Red1L Press Left");
+      Controller.Screen.setCursor(3,1);
+      Controller.Screen.print("Bypass Press X");
+      break;
+    }
+  }
+  while(true)
+  {
+    if (alliance == 0)
+    {
+      if (Controller.ButtonLeft.pressing())
+      {
+        fieldPosition=1;
+        Controller.Screen.clearScreen();
+        Controller.Screen.setCursor(1,1);
+        Controller.Screen.print("Blue 5pt Left");
+        break;
+      }
+      else if (Controller.ButtonRight.pressing())
+      {
+        fieldPosition=3;
+        Controller.Screen.clearScreen();
+        Controller.Screen.setCursor(1,1);
+        Controller.Screen.print("Blue 1pt Right");
+        break;
+      }
+      else if (Controller.ButtonX.pressing())
+      {
+        fieldPosition=4;
+        Controller.Screen.clearScreen();
+        Controller.Screen.setCursor(1,1);
+        Controller.Screen.print("Auton Bypassed");
+        break;
+      }
+    }
+    else if (alliance == 1)
+    {
+      if (Controller.ButtonRight.pressing())
+      {
+        fieldPosition=2;
+        Controller.Screen.clearScreen();
+        Controller.Screen.setCursor(1,1);
+        Controller.Screen.print("Red 5pt Right");
+        break;
+      }
+      else if (Controller.ButtonLeft.pressing())
+      {
+        fieldPosition=3;
+        Controller.Screen.clearScreen();
+        Controller.Screen.setCursor(1,1);
+        Controller.Screen.print("Red 1pt Left");
+        break;
+      }
+      else if (Controller.ButtonX.pressing())
+      {
+        fieldPosition=4;
+        Controller.Screen.clearScreen();
+        Controller.Screen.setCursor(1,1);
+        Controller.Screen.print("Auton Bypassed");
+        break;
+      }
+    }
+  }
+}
+// /*---------------------------------------------------------------------------*/
+// /*                                                                           */
+// /*                              Autonomous Task                              */
+// /*                                                                           */
+// /*  This task is used to control your robot during the autonomous phase of   */
+// /*  a VEX Competition.                                                       */
+// /*                                                                           */
+// /*  You must modify the code to add your own robot specific commands here.   */
+// /*---------------------------------------------------------------------------*/
+// 
+ void auton( void ) { 
+  
+  switch(fieldPosition)
+  {
+    case 1: //Blue Single 5 Pt
+    {
+    deploy();
+    Intake1.spin(directionType::fwd, 100, velocityUnits::pct);
+    Intake2.spin(directionType::fwd, 100, velocityUnits::pct);
+    straight(200,30, true);
+    straight(500,20, false);
+    straight(-200, 40, false);
+    robotTurn(-400, 50);
+    straight(600, 30, true);
+    Intake1.stop();
+    Intake2.stop();
+    rampDown();
+    Intake1.spin(directionType::rev, 30, velocityUnits::pct); //testing
+    Intake2.spin(directionType::rev, 30, velocityUnits::pct);
+    straight(-500, 30, true);
+    Lift.rotateTo(-400, rotationUnits::deg, 50, velocityUnits::pct);
+    Lift.stop();
+    break;
+    }
+    case 2: //Red Single 5pt
+    {
+    deploy();
+    Intake1.spin(directionType::fwd, 100, velocityUnits::pct);
+    Intake2.spin(directionType::fwd, 100, velocityUnits::pct);
+    straight(50,10,true);
+    straight(200,30, true);
+    straight(500,20, false);
+    straight(-200, 40, false);
+    robotTurn(400, 50);
+    straight(600, 30, true);
+    Intake1.stop();
+    Intake2.stop();
+    Intake1.spin(directionType::rev, 60, velocityUnits::pct);
+    Intake2.spin(directionType::rev, 60, velocityUnits::pct);
+    rampDown();
+    straight(-500, 30, true);
+    Lift.rotateTo(900, rotationUnits::deg, 50, velocityUnits::pct);
+    Lift.stop();
+    break;
+    }
+    case 3: //Either Alliance 1 pt
+    {
+      straight (-300, 50, false); //straight (-1125, 50, false)
+      straight (300, 50, true);
+      deploy();
+
+      break;
+    }
+    case 4:
+    {
+      break;
+    }
+  }
+ }
+ void updateSpeedMode(int speedMode) {
+    switch(speedMode) {
+      case 0:
+          Controller.Screen.clearScreen();
+          Controller.Screen.setCursor(1,1);
+          Controller.Screen.print("Stack Mode 50");
+          Controller.rumble(".");
+          LeftMotor.setMaxTorque(50, percentUnits::pct);
+          LeftMotor2.setMaxTorque(50, percentUnits::pct);
+          RightMotor.setMaxTorque(50, percentUnits::pct);
+          RightMotor2.setMaxTorque(50, percentUnits::pct);
+        break;
+      case 1:
+          Controller.Screen.clearScreen();
+          Controller.Screen.setCursor(1,1);
+          Controller.Screen.print("Move Mode 75");
+          Controller.rumble("..");
+          LeftMotor.setMaxTorque(75, percentUnits::pct);
+          LeftMotor2.setMaxTorque(75, percentUnits::pct);
+          RightMotor.setMaxTorque(75, percentUnits::pct);
+          RightMotor2.setMaxTorque(75, percentUnits::pct);
+          break;
+      case 2:
+          Controller.Screen.clearScreen();
+          Controller.Screen.setCursor(1,1);
+          Controller.Screen.print("Maximum Overdrive 100");
+          Controller.rumble("-");
+          LeftMotor.setMaxTorque(100, percentUnits::pct);
+          LeftMotor2.setMaxTorque(100, percentUnits::pct);
+          RightMotor.setMaxTorque(100, percentUnits::pct);
+          RightMotor2.setMaxTorque(100, percentUnits::pct);
+          break;
+    }
+ }
+// /*---------------------------------------------------------------------------*/
+// /*                                                                           */
+// /*                              User Control Task                            */
+// /*                                                                           */
+// /*  This task is used to control your robot during the user control phase of */
+// /*  a VEX Competition.                                                       */
+// /*                                                                           */
+// /*  You must modify the code to add your own robot specific commands here.   */
+// /*---------------------------------------------------------------------------*/
+void usercontrol(void)
+{
+  Controller.ButtonDown.pressed([] {
+    speedMode = speedMode != 0 ? speedMode-1 : 2;
+    updateSpeedMode(speedMode);
+  });
+  Controller.ButtonB.pressed([] {
+    speedMode = speedMode != 2 ? speedMode+1 : 0;
+    updateSpeedMode(speedMode);
+  });
+  Controller.ButtonRight.pressed(bucketMode);
+  while (true) {          
+        if(Controller.ButtonX.pressing())
+        {
+          //Tower2.setMaxTorque(100, percentUnits::pct);
+          Tower1.spin(directionType::fwd, 100, velocityUnits::pct);
+          //Tower2.spin(directionType::rev, 100, velocityUnits::pct);
+          
+        }
+        else if(Controller.ButtonY.pressing())
+        {
+          Tower1.spin(directionType::rev, 100, velocityUnits::pct);
+          //Tower2.spin(directionType::fwd, 25, velocityUnits::pct);
+        }
+        else 
+        {
+          Tower1.stop(brakeType::hold);
+          //Tower2.stop(brakeType::hold);
+        }
+        if(Controller.ButtonUp.pressing())
+        {
+          Lift.spin(directionType::fwd, Controller.Axis2.value(), velocityUnits::pct);
+          macroRunning = false;
+        }
+        else
+        {
+          if (!macroRunning){
+              Lift.stop((brakeType::hold));
+          }
+        }
+        
+        if(Controller.ButtonR1.pressing())
+        {
+          Intake1.spin(directionType::fwd, 100, velocityUnits::pct);
+          Intake2.spin(directionType::fwd, 100, velocityUnits::pct);
+        }
+        else if(Controller.ButtonL1.pressing())
+        {
+          Intake1.spin(directionType::rev, 100, velocityUnits::pct);
+          Intake2.spin(directionType::rev, 100, velocityUnits::pct);
+        }
+        else
+        {
+          Intake1.stop((brakeType::hold));
+          Intake2.stop((brakeType::hold));
+        }
+        if(Controller.ButtonL2.pressing()&&Controller.ButtonR2.pressing())
+        {
+          macroRunning = true;
+        }
+        if(macroRunning)
+        {
+          rampDown();
+          macroRunning = false;
+        }
+      LeftMotor.spin(directionType::fwd, (Controller.Axis3.value() + Controller.Axis1.value())/1, velocityUnits::pct); 
+      LeftMotor2.spin(directionType::fwd, (Controller.Axis3.value() + Controller.Axis1.value())/1, velocityUnits::pct);
+      RightMotor.spin(directionType::fwd, (Controller.Axis3.value() - Controller.Axis1.value())/1, velocityUnits::pct);
+      RightMotor2.spin(directionType::fwd, (Controller.Axis3.value() - Controller.Axis1.value())/1, velocityUnits::pct);
+      task::sleep(10); 
+    } 
+  
+}
+// Main will set up the competition functions and callbacks.
+ int main() 
+{
+  Competition.autonomous(auton);        
+  Competition.drivercontrol(usercontrol);
+  pre_auton();
+  //Prevent main from exiting with an infinite loop.                        
+  while(1) 
+  {
+  vex::task::sleep(100); //Sleep the task for a short amount of time to prevent wasted resources.
+  }  
+    
+}
