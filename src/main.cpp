@@ -1,3 +1,4 @@
+
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -13,7 +14,7 @@
 #include "vex_global.h"
 #include "vex_thread.h"
 #include "vex_units.h"
-#include "vlib.h"
+#include "vext.h"
 #include <future>
 #include <type_traits>
 
@@ -26,16 +27,16 @@ vex::competition Competition;
 vext::motor ramp(PORT5, gearSetting::ratio18_1, true); // ramp
 vext::motor tower(PORT1, gearSetting::ratio6_1, false);
 
-vext::motor IntakeA(vex::PORT3, gearSetting::ratio18_1, true);
-vext::motor IntakeB(vex::PORT8, gearSetting::ratio18_1);
-vext::motors intake = vext::motors(IntakeA, IntakeB);
+vex::motor IntakeA(vex::PORT3, gearSetting::ratio18_1, true);
+vex::motor IntakeB(vex::PORT8, gearSetting::ratio18_1);
+auto intake = vext::two(IntakeA, IntakeB);
 
-vext::motor LeftMotor(PORT19, gearSetting::ratio18_1, true);
-vext::motor RightMotor(PORT12, gearSetting::ratio18_1, false);
-vext::motor LeftMotor2(PORT20, gearSetting::ratio18_1, true);
-vext::motor RightMotor2(PORT11, gearSetting::ratio18_1, false);
+vex::motor LeftMotor(PORT19, gearSetting::ratio18_1, true);
+vex::motor RightMotor(PORT12, gearSetting::ratio18_1, false);
+vex::motor LeftMotor2(PORT20, gearSetting::ratio18_1, true);
+vex::motor RightMotor2(PORT11, gearSetting::ratio18_1, false);
 
-auto bot = vext::fwd(LeftMotor, LeftMotor2, RightMotor, RightMotor2);
+vext::fwd bot = vext::fwd(LeftMotor, LeftMotor2, RightMotor, RightMotor2);
 
 static int speedMode = 2;
 int alliance = 2;
@@ -52,6 +53,7 @@ int alliance = 2;
 
 void pre_auton(void) {
   while (true) {
+
     if (Controller.ButtonY.pressing()) {
       alliance = 0;
       Brain.Screen.clearScreen();
@@ -87,7 +89,7 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
-  // ramp.straight(100);
+  /*// ramp.straight(100);
   // basic 4pt auton
   // blue
   if (alliance == 0) {
@@ -113,7 +115,7 @@ void autonomous(void) {
     vex::task::sleep(1000);
     bot.moveBy(50, 20);
     vex::task::sleep(1000);
-  }
+  }*/
 }
 
 void printScrn(const char *format) {
@@ -184,10 +186,10 @@ void usercontrol(void) {
 
 int main() {
   // Set up callbacks for autonomous and driver control periods.
-  Competition.autonomous(autonomous);
-  Competition.drivercontrol(usercontrol);
+  //Competition.autonomous(autonomous);
+  //Competition.drivercontrol(usercontrol);
 
   // Run the pre-autonomous function.
-  pre_auton();
-  Controller.ButtonLeft.pressed([] { autonomous(); });
+  //pre_auton();
+  //Controller.ButtonLeft.pressed([] { autonomous(); });
 }

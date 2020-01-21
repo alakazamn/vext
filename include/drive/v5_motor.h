@@ -66,7 +66,7 @@ namespace vext {
       void straight(int power) {
         vex::directionType direction =
             power < 0 ? vex::directionType::fwd : vex::directionType::rev;
-        this->spin(direction, abs(power), vex::percentUnits::pct);
+        spin(direction, abs(power), vex::percentUnits::pct);
       }
 
     };
