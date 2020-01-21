@@ -53,7 +53,6 @@ int alliance = 2;
 
 void pre_auton(void) {
   while (true) {
-
     if (Controller.ButtonY.pressing()) {
       alliance = 0;
       Brain.Screen.clearScreen();
@@ -117,12 +116,54 @@ void autonomous(void) {
     vex::task::sleep(1000);
   }*/
 }
+void wait(double miliseconds)
+{
+  task::sleep(miliseconds);
+}
+void straight(double degrees, double speed, bool coast) //This method is used as a fast way to write in straights and the ability to coast is also given
+{
+  LeftMotor.resetRotation();
+  LeftMotor2.resetRotation();
+  RightMotor.resetRotation();
+  RightMotor2.resetRotation();
+  LeftMotor.startRotateTo(degrees,rotationUnits::deg,speed,velocityUnits::pct);
+  LeftMotor2.startRotateTo(degrees,rotationUnits::deg,speed,velocityUnits::pct);
+  RightMotor.rotateTo(degrees,rotationUnits::deg,speed,velocityUnits::pct);
+  RightMotor2.rotateTo(degrees,rotationUnits::deg,speed,velocityUnits::pct);
+  if(coast==true)
+  {
+    LeftMotor.stop(brakeType::coast);
+    LeftMotor2.stop(brakeType::coast);
+    RightMotor.stop(brakeType::coast);
+    RightMotor2.stop(brakeType::coast);
+  }
+  while(LeftMotor.isSpinning()&&RightMotor.isSpinning())
+  {
+    wait(10);
+  }
+}
+
+void rampDown() //This method is used in the auton to place the tower
+{
+  ramp.spin(directionType::fwd);
+  //ramp.rotateFor(-700, rotationUnits::deg, 100, velocityUnits::pct);
+  /*ramp.rotateFor(700, rotationUnits::deg, 50, velocityUnits::pct);
+  ramp.rotateTo(-600, rotationUnits::deg, 30, velocityUnits::pct);
+  ramp.startRotateTo(550, rotationUnits::deg, 20, velocityUnits::pct);
+  //tower.startRotateTo(200, rotationUnits::deg, 50, velocityUnits::pct);
+  straight(25,20,false);
+  ramp.stop(brakeType::hold);
+  ramp.rotateTo(-300, rotationUnits::deg, 50, velocityUnits::pct);*/
+  wait(3000);
+  ramp.stop();
+}
 
 void printScrn(const char *format) {
   Controller.Screen.clearScreen();
   Controller.Screen.setCursor(1, 1);
   Controller.Screen.print(format);
 }
+
 void updateSpeedMode(int speedMode) {
   switch (speedMode) {
   case 0:
@@ -169,15 +210,18 @@ void usercontrol(void) {
     speedMode = speedMode != 2 ? speedMode + 1 : 0;
     updateSpeedMode(speedMode);
   });
-
-  while (true) {
+  Controller.Axis2.changed([] {
     if (Controller.ButtonUp.pressing()) {
       ramp.spin(directionType::fwd, Controller.Axis2.value(),
                 velocityUnits::pct);
     } else {
       ramp.stop((brakeType::hold));
     }
-  }
+  });
+  Controller.ButtonB.pressed([] {
+    rampDown();
+  });
+
 }
 
 //
