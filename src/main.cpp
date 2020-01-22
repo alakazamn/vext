@@ -143,19 +143,21 @@ void straight(double degrees, double speed, bool coast) //This method is used as
   }
 }
 
+static bool macroActivated = false;
 void rampDown() //This method is used in the auton to place the tower
 {
-  ramp.spin(directionType::fwd);
-  //ramp.rotateFor(-700, rotationUnits::deg, 100, velocityUnits::pct);
-  /*ramp.rotateFor(700, rotationUnits::deg, 50, velocityUnits::pct);
-  ramp.rotateTo(-600, rotationUnits::deg, 30, velocityUnits::pct);
-  ramp.startRotateTo(550, rotationUnits::deg, 20, velocityUnits::pct);
-  //tower.startRotateTo(200, rotationUnits::deg, 50, velocityUnits::pct);
-  straight(25,20,false);
-  ramp.stop(brakeType::hold);
-  ramp.rotateTo(-300, rotationUnits::deg, 50, velocityUnits::pct);*/
-  wait(3000);
-  ramp.stop();
+  if(!macroActivated)
+    macroActivated = true;
+  else
+    return;
+
+  ramp.resetRotation();
+  ramp.rotateTo(4000, rotationUnits::deg, 100, velocityUnits::pct);
+  intake.startRotateFor(-2000, rotationUnits::deg, 50, velocityUnits::pct);
+  intake.startRotateFor(-2000, rotationUnits::deg, 50, velocityUnits::pct);
+  ramp.rotateFor(950, rotationUnits::deg, 75, velocityUnits::pct);
+  //Lift.rotateFor(700, rotationUnits::deg, 50, velocityUnits::pct);
+  macroActivated = false;
 }
 
 void printScrn(const char *format) {
@@ -211,6 +213,9 @@ void usercontrol(void) {
     updateSpeedMode(speedMode);
   });
   Controller.Axis2.changed([] {
+    if(macroActivated) {
+      return;
+    }
     if (Controller.ButtonUp.pressing()) {
       ramp.spin(directionType::fwd, Controller.Axis2.value(),
                 velocityUnits::pct);
