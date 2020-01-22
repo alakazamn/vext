@@ -44,33 +44,13 @@ vext::fwd bot = vext::fwd(LeftMotor, LeftMotor2, RightMotor, RightMotor2);
 static int speedMode = 2;
 int alliance = 2;
 
-/*---------------------------------------------------------------------------*/
-/*                          Pre-Autonomous Functions                         */
-/*                                                                           */
-/*  You may want to perform some actions before the competition starts.      */
-/*  Do them in the following function.  You must return from this function   */
-/*  or the autonomous and usercontrol tasks will not be started.  This       */
-/*  function is only called once after the cortex has been powered on and    */
-/*  not every time that the robot is disabled.                               */
-/*---------------------------------------------------------------------------*/
-
 void pre_auton(void) {
   redacted::pre_auton(Controller, Brain);
   return;
 }
 
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                              Autonomous Task                              */
-/*                                                                           */
-/*  This task is used to control your robot during the autonomous phase of   */
-/*  a VEX Competition.                                                       */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/
-
 void autonomous(void) {
-    redacted::auton(bot, intake, ramp, tower);
+  redacted::auton(bot, intake, ramp, tower);
 
   /*// ramp.straight(100);
   // basic 4pt auton
@@ -100,57 +80,28 @@ void autonomous(void) {
     vex::task::sleep(1000);
   }*/
 }
-void printScrn(const char *format) {
-  Controller.Screen.clearScreen();
-  Controller.Screen.setCursor(1, 1);
-  Controller.Screen.print(format);
-}
-
-void updateSpeedMode(int speedMode) {
-  switch (speedMode) {
-  case 0:
-    printScrn("Stack Mode 50");
-    Controller.rumble("....");
-    bot.setMaxTorque(50, percentUnits::pct);
-    break;
-  case 1:
-    printScrn("Move Mode 75");
-    Controller.rumble("--");
-    bot.setMaxTorque(75, percentUnits::pct);
-    break;
-  case 2:
-    printScrn("Maximum Overdrive 100");
-    Controller.rumble(".-.-");
-    bot.setMaxTorque(100, percentUnits::pct);
-    break;
-  }
-}
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*                              User Control Task                            */
 /*                                                                           */
-/*  This task is used to control your robot during the user control phase of */
-/*  a VEX Competition.                                                       */
+/*  Sets up all the controller binds using the macros from vext              */
 /*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
-  ramp.resetRotation();
-
   bot.setMovesWhileTurns(true);
-  bot.bind(Controller.Axis1, Controller.Axis3); // Bind bot control to axis
+  bot.bind(Controller.Axis1, Controller.Axis3); // Bind bot control to axis 1 and 3
                                                 // (X,Y)
   btn(100, Controller.ButtonL1, Controller.ButtonR1,
-      intake); // Bind R1 and L1 to the intake
+      intake); // Bind L1 and R1 to the intake
   btn(100, Controller.ButtonY, Controller.ButtonX, tower);
-  //btn(100, Controller.ButtonY, Controller.ButtonX, ramp);
 
   Controller.ButtonDown.pressed([] {
     speedMode = speedMode != 2 ? speedMode + 1 : 0;
-    updateSpeedMode(speedMode);
+    redacted::updateSpeedMode(speedMode, bot);
   });
+
   Controller.Axis2.changed([] {
     if(redacted::rampMacroActivated()) {
       return;
@@ -166,11 +117,10 @@ void usercontrol(void) {
   Controller.ButtonB.pressed([] {
     redacted::rampDown(ramp, intake);
   });
-
 }
 
 //
-// Main will set up the competition functions and callbacks.
+// Do not modify, except to comment out the last linex
 //
 
 int main() {
@@ -179,6 +129,7 @@ int main() {
   Competition.drivercontrol(usercontrol);
 
   // Run the pre-autonomous function.
-  //pre_auton();
-  Controller.ButtonA.pressed([] { autonomous(); });
+  pre_auton();
+
+  Controller.ButtonA.pressed([] { autonomous(); }); //for testing
 }

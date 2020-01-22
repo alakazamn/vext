@@ -42,6 +42,17 @@ void robotTurn(vext::fwd bot, double degrees, double speed) //This method is use
   }
 }
 
+
+/*---------------------------------------------------------------------------*/
+/*                          Pre-Autonomous Functions                         */
+/*                                                                           */
+/*  You may want to perform some actions before the competition starts.      */
+/*  Do them in the following function.  You must return from this function   */
+/*  or the autonomous and usercontrol tasks will not be started.  This       */
+/*  function is only called once after the cortex has been powered on and    */
+/*  not every time that the robot is disabled.                               */
+/*---------------------------------------------------------------------------*/
+
 static int fieldPosition;
 static int alliance;
 
@@ -157,6 +168,44 @@ void deploy(vext::two intake, vex::motor tower, vex::motor ramp) //This method i
   intake.stop();
   task::sleep(100);
 }
+
+void printScrn(const char *format) {
+  vex::controller Controller;
+
+  Controller.Screen.clearScreen();
+  Controller.Screen.setCursor(1, 1);
+  Controller.Screen.print(format);
+}
+
+void redacted::updateSpeedMode(int speedMode, vext::fwd bot) {
+  vex::controller Controller;
+  switch (speedMode) {
+  case 0:
+    printScrn("Stack Mode 50");
+    Controller.rumble("....");
+    bot.setMaxTorque(50, percentUnits::pct);
+    break;
+  case 1:
+    printScrn("Move Mode 75");
+    Controller.rumble("--");
+    bot.setMaxTorque(75, percentUnits::pct);
+    break;
+  case 2:
+    printScrn("Maximum Overdrive 100");
+    Controller.rumble(".-.-");
+    bot.setMaxTorque(100, percentUnits::pct);
+    break;
+  }
+}
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*                              Autonomous Task                              */
+/*                                                                           */
+/*  This task is used to control your robot during the autonomous phase of   */
+/*  a VEX Competition.                                                       */
+/*                                                                           */
+/*  You must modify the code to add your own robot specific commands here.   */
+/*---------------------------------------------------------------------------*/
 
 void redacted::auton(vext::fwd bot, vext::two intake, vex::motor ramp, vex::motor tower) {
   switch(fieldPosition)

@@ -3,13 +3,13 @@
 #ifndef VEXT_TWO_CLASS_H
 #define VEXT_TWO_CLASS_H
 /*-----------------------------------------------------------------------------*/
-/** @file    vlib_two.h
+/** @file   v5_four.h
  * @brief   VEX provides a class called "motor_group" which allows a programmer
  *          to perform actions on multiple motors together, as if they were one.
- *          This class extends that functionality with actions specific to two
+ *          This class extends that functionality with actions specific to four
  *          motors, such as turning. It also provides the foundation for something
- *          like a chaindrive. 
- *          Use of the vlib_two class allows for easy controller binding using vlib's
+ *          like a four-motor chaindrive. 
+ *          Use of the vlib_four class allows for easy controller binding using vext's
  *          macros (btn or axs, found below).
  *//*---------------------------------------------------------------------------*/
 
@@ -96,11 +96,10 @@ public:
 
 /*
 * Allows binding a vlib::two motorgroup to an joystick axis
-* @param int pow Velocity for both motors
 * @param vex::controller::axis axis Joystick Axis for control.
 * @param vlib::two two Two-button motorgrouup
 */
-#define axs(pow, axis, two)                                                    \
+#define axs(axis, two)                                                    \
   static auto moveUpdate = [&] {                                               \
     if (axis.position() >= 10 || axis.position() <= -10) {                     \
       two.straight(axis.position());                                      \

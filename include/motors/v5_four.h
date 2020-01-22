@@ -3,12 +3,12 @@
 #ifndef VEXT_FOUR_CLASS_H
 #define VEXT_FOUR_CLASS_H
 /*-----------------------------------------------------------------------------*/
-/** @file    vlib_two.h
+/** @file    v5_four.h
  * @brief   VEX provides a class called "motor_group" which allows a programmer
  *          to perform actions on multiple motors together, as if they were one.
  *          This class extends that functionality with actions specific to two
  *          motors, such as turning. It also provides the foundation for something
- *          like a chaindrive. 
+ *          like a two-motor chaindrive. 
  *          Use of the vlib_two class allows for easy controller binding using vlib's
  *          macros (btn or axs, found below).
  *//*---------------------------------------------------------------------------*/
@@ -96,11 +96,11 @@ public:
 */
 
 /*
-* Allows binding a vlib::two motorgroup to a button pair
-* @param int pow Velocity for both motors
+* Allows binding a vext::four motorgroup to a button pair
+* @param int pow Velocity for all motors
 * @param vex::controller::button up Button for positive velocity.
 * @param vex::controller::button down Button for negative velocity.
-* @param vlib::two two Two-button motorgrouup
+* @param vext::four four Four-button motorgroup
 */
 #define btn(pow, up, down, four)                                                \
   down.pressed([] { four.straight(-pow); });                                      \
@@ -109,12 +109,11 @@ public:
   up.released([] { four.stop(); });
 
 /*
-* Allows binding a vlib::two motorgroup to an joystick axis
-* @param int pow Velocity for both motors
+* Allows binding a vext::four motorgroup to an joystick axis
 * @param vex::controller::axis axis Joystick Axis for control.
-* @param vlib::two two Two-button motorgrouup
+* @param vext::four four Four-button motorgroup
 */
-#define axs(pow, axis, four)                                                    \
+#define axs(axis, four)                                                    \
   static auto moveUpdate = [&] {                                               \
     if (axis.position() >= 10 || axis.position() <= -10) {                     \
       four.straight(axis.position());                                      \

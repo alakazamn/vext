@@ -4,11 +4,9 @@
 #define VEXT_DRIVE_H
 
 /*-----------------------------------------------------------------------------*/
-/** @file   vlib_chaindrive.h
- * @brief   This class utilizes the vlib::two motorgroup to provide 
- *          functionality for building a chaindrive.
- *          Controller binding is provided with a function.
- *          Some of the methods are intended for use with autons.
+/** @file   v5_drive.h
+ * @brief   This abstract class should be implemented to add more types of 
+ *          drives for vext. Currently two and four motor drives are supported.
  *//*---------------------------------------------------------------------------*/
 
 namespace vext {
@@ -72,7 +70,6 @@ public:
 
   /**
    * Drive a two-motor chaindrive bot in a straight line
-   *
    * @param speed The percentage of motor power to apply
    */
 

@@ -1,15 +1,16 @@
 #include "vex.h"
-#include "v5_four.h"
+#include "motors/v5_four.h"
 #include "drive/v5_drive.h"
 
 #ifndef VEXT_FWD_H
 #define VEXT_FWD_H
 
 /*-----------------------------------------------------------------------------*/
-/** @file   vlib_chaindrive.h
- * @brief   This class utilizes the vlib::two motorgroup to provide 
- *          functionality for building a chaindrive.
- *          Controller binding is provided with a function.
+/** @file   v5_fwd.h
+ * @brief   This class utilizes the vlib::four motorgroup to provide 
+ *          functionality for building a four-wheel drive.
+ *          Controller binding is provided with a function, 
+ *          intended for two-stick control.
  *          Some of the methods are intended for use with autons.
  *//*---------------------------------------------------------------------------*/
 

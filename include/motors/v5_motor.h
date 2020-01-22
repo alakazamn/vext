@@ -1,17 +1,11 @@
 #include "vex.h"
 
-/*----------------------------------------------------------------------------*/
-/*                                                                            */
-/*    Copyright (c) Innovation First 2017, All rights reserved.               */
-/*                                                                            */
-/*    Module:     vex_motorgroup.h                                            */
-/*    Author:     James Pearman                                               */
-/*    Created:    7 April 2019                                                */
-/*                                                                            */
-/*    Revisions:                                                              */
-/*                V1.00     TBD - Initial release                             */
-/*                                                                            */
-/*----------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------*/
+/** @file   v5_motor.h
+ * @brief   This is just the vanilla VEX motor class, but with some methods that
+ *          allow interchangeability for binding either one, two, or four motor
+ *          groups.
+ *//*---------------------------------------------------------------------------*/
 
 #ifndef   VEXT_MOTOR_CLASS_H
 #define   VEXT_MOTOR_CLASS_H
@@ -68,6 +62,7 @@ namespace vext {
             power < 0 ? vex::directionType::fwd : vex::directionType::rev;
         spin(direction, abs(power), vex::percentUnits::pct);
       }
+
       void stop(vex::brakeType brake) {
         vex::motor::stop(brake);
       }
