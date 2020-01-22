@@ -18,6 +18,8 @@
 #include <future>
 #include <type_traits>
 
+#include "redacted.h"
+
 using namespace vex;
 
 vex::brain Brain;
@@ -27,8 +29,8 @@ vex::competition Competition;
 vext::motor ramp(PORT5, gearSetting::ratio18_1, true); // ramp
 vext::motor tower(PORT1, gearSetting::ratio6_1, false);
 
-vex::motor IntakeA(vex::PORT3, gearSetting::ratio18_1, true);
-vex::motor IntakeB(vex::PORT8, gearSetting::ratio18_1);
+vex::motor IntakeA(vex::PORT8, gearSetting::ratio18_1, true);
+vex::motor IntakeB(vex::PORT3, gearSetting::ratio18_1);
 auto intake = vext::two(IntakeA, IntakeB);
 
 vex::motor LeftMotor(PORT19, gearSetting::ratio18_1, true);
@@ -36,6 +38,7 @@ vex::motor RightMotor(PORT12, gearSetting::ratio18_1, false);
 vex::motor LeftMotor2(PORT20, gearSetting::ratio18_1, true);
 vex::motor RightMotor2(PORT11, gearSetting::ratio18_1, false);
 
+vex::limit rampDetector(Brain.ThreeWirePort.A);
 vext::fwd bot = vext::fwd(LeftMotor, LeftMotor2, RightMotor, RightMotor2);
 
 static int speedMode = 2;
@@ -116,50 +119,6 @@ void autonomous(void) {
     vex::task::sleep(1000);
   }*/
 }
-void wait(double miliseconds)
-{
-  task::sleep(miliseconds);
-}
-void straight(double degrees, double speed, bool coast) //This method is used as a fast way to write in straights and the ability to coast is also given
-{
-  LeftMotor.resetRotation();
-  LeftMotor2.resetRotation();
-  RightMotor.resetRotation();
-  RightMotor2.resetRotation();
-  LeftMotor.startRotateTo(degrees,rotationUnits::deg,speed,velocityUnits::pct);
-  LeftMotor2.startRotateTo(degrees,rotationUnits::deg,speed,velocityUnits::pct);
-  RightMotor.rotateTo(degrees,rotationUnits::deg,speed,velocityUnits::pct);
-  RightMotor2.rotateTo(degrees,rotationUnits::deg,speed,velocityUnits::pct);
-  if(coast==true)
-  {
-    LeftMotor.stop(brakeType::coast);
-    LeftMotor2.stop(brakeType::coast);
-    RightMotor.stop(brakeType::coast);
-    RightMotor2.stop(brakeType::coast);
-  }
-  while(LeftMotor.isSpinning()&&RightMotor.isSpinning())
-  {
-    wait(10);
-  }
-}
-
-static bool macroActivated = false;
-void rampDown() //This method is used in the auton to place the tower
-{
-  if(!macroActivated)
-    macroActivated = true;
-  else
-    return;
-
-  ramp.resetRotation();
-  ramp.rotateTo(4000, rotationUnits::deg, 100, velocityUnits::pct);
-  intake.startRotateFor(-2000, rotationUnits::deg, 50, velocityUnits::pct);
-  intake.startRotateFor(-2000, rotationUnits::deg, 50, velocityUnits::pct);
-  ramp.rotateFor(950, rotationUnits::deg, 75, velocityUnits::pct);
-  //Lift.rotateFor(700, rotationUnits::deg, 50, velocityUnits::pct);
-  macroActivated = false;
-}
-
 void printScrn(const char *format) {
   Controller.Screen.clearScreen();
   Controller.Screen.setCursor(1, 1);
@@ -170,17 +129,17 @@ void updateSpeedMode(int speedMode) {
   switch (speedMode) {
   case 0:
     printScrn("Stack Mode 50");
-    Controller.rumble(".");
+    Controller.rumble("....");
     bot.setMaxTorque(50, percentUnits::pct);
     break;
   case 1:
     printScrn("Move Mode 75");
-    Controller.rumble("..");
+    Controller.rumble("--");
     bot.setMaxTorque(75, percentUnits::pct);
     break;
   case 2:
     printScrn("Maximum Overdrive 100");
-    Controller.rumble("-");
+    Controller.rumble(".-.-");
     bot.setMaxTorque(100, percentUnits::pct);
     break;
   }
@@ -197,34 +156,34 @@ void updateSpeedMode(int speedMode) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
+  ramp.resetRotation();
+
   bot.setMovesWhileTurns(true);
   bot.bind(Controller.Axis1, Controller.Axis3); // Bind bot control to axis
                                                 // (X,Y)
-  btn(100, Controller.ButtonR1, Controller.ButtonL1,
+  btn(100, Controller.ButtonL1, Controller.ButtonR1,
       intake); // Bind R1 and L1 to the intake
-  btn(100, Controller.ButtonX, Controller.ButtonY, tower);
+  btn(100, Controller.ButtonY, Controller.ButtonX, tower);
+  //btn(100, Controller.ButtonY, Controller.ButtonX, ramp);
 
-  Controller.ButtonLeft.pressed([] {
-    speedMode = speedMode != 0 ? speedMode - 1 : 2;
-    updateSpeedMode(speedMode);
-  });
-  Controller.ButtonRight.pressed([] {
+  Controller.ButtonDown.pressed([] {
     speedMode = speedMode != 2 ? speedMode + 1 : 0;
     updateSpeedMode(speedMode);
   });
   Controller.Axis2.changed([] {
-    if(macroActivated) {
+    if(redacted::rampMacroActivated()) {
       return;
     }
-    if (Controller.ButtonUp.pressing()) {
+    std::cout << ramp.temperature(vex::temperatureUnits::fahrenheit) << std::endl;
+    if (Controller.ButtonUp.pressing() && (Controller.Axis2.value() > 0 || rampDetector.pressing() == false)) {
       ramp.spin(directionType::fwd, Controller.Axis2.value(),
                 velocityUnits::pct);
     } else {
-      ramp.stop((brakeType::hold));
+      ramp.stop((brakeType::coast));
     }
   });
   Controller.ButtonB.pressed([] {
-    rampDown();
+    redacted::rampDown(ramp, intake);
   });
 
 }
@@ -235,8 +194,8 @@ void usercontrol(void) {
 
 int main() {
   // Set up callbacks for autonomous and driver control periods.
-  //Competition.autonomous(autonomous);
-  //Competition.drivercontrol(usercontrol);
+  Competition.autonomous(autonomous);
+  Competition.drivercontrol(usercontrol);
 
   // Run the pre-autonomous function.
   //pre_auton();

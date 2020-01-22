@@ -68,7 +68,12 @@ namespace vext {
             power < 0 ? vex::directionType::fwd : vex::directionType::rev;
         spin(direction, abs(power), vex::percentUnits::pct);
       }
-
+      void stop(vex::brakeType brake) {
+        vex::motor::stop(brake);
+      }
+      void stop() {
+        vex::motor::stop(vex::brakeType::hold);
+      }
     };
   }
 
