@@ -17,6 +17,10 @@ using namespace vex;
         return macroOn;
       }
       static void rampDown(vex::motor ramp, vext::two intake); 
+
+      static void pre_auton(vex::controller Controller, vex::brain Brain);
+
+      static void auton(vext::fwd bot, vext::two intake, vex::motor ramp, vex::motor tower);
   };
 
 

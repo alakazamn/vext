@@ -17,9 +17,9 @@ namespace vext {
 
 class fwd : public drive {
 private:
-  vext::four motors;
   bool moveWhileTurning;
 public:
+  vext::four motors;
   /*
    * Construct a chaindrive with left and right motors
    * @param left Left port
@@ -87,6 +87,8 @@ public:
 
   void stop();
 
+  void stopCoast();
+  
   /**
    * Binds bot movement (driver control) to two joysticks
    *
@@ -105,6 +107,27 @@ public:
     * @param units The measurement unit for the torque value.
     */
   void            setMaxTorque( double value, vex::percentUnits units );
+
+  /** 
+    * @prog_lang{cpp|pro}
+    * @drawer_cat{setting}
+    * @block_sig{Motor.resetRotation();}
+    * @brief Resets the motor's encoder to the value of zero. 
+    */   
+  void            resetRotation( void );
+
+  /** 
+      * @prog_lang{cpp|pro}
+      * @drawer_cat{action}
+      * @block_sig{Motor.startRotateTo(90,vex::rotationUnits::deg,50,vex::velocityUnits::pct);}
+      * @brief Starts spinning a motor to an absolute target rotation but does not wait for the motor to reach that target.
+      * @param rotation Sets the amount of rotation.
+      * @param units The measurement unit for the rotation value.
+      * @param velocity Sets the amount of velocity.
+      * @param units_v The measurement unit for the velocity value.
+      */
+void            rotateTo( double rotation, vex::rotationUnits units, double velocity, vex::velocityUnits units_v );
+    
 };
 } // namespace vext
 #endif

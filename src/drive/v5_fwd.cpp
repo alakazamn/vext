@@ -42,11 +42,28 @@ void vext::fwd::turn(int x, int y) { motors.turn(x, y); }
 
 void vext::fwd::stop() { motors.stop(); }
 
+void vext::fwd::stopCoast() { motors.setStopping(vex::brakeType::coast); motors.stop(); }
+
 void vext::fwd::setMaxTorque(double value, vex::percentUnits units) {
   motors.leftA().setMaxTorque(value, units);
   motors.leftB().setMaxTorque(value, units);
   motors.rightA().setMaxTorque(value, units);
   motors.rightB().setMaxTorque(value, units);
+}
+
+void vext::fwd::resetRotation() {
+  motors.leftA().resetRotation();
+  motors.leftB().resetRotation();
+  motors.rightA().resetRotation();
+  motors.rightB().resetRotation();
+}
+
+void vext::fwd::rotateTo( double rotation, vex::rotationUnits units, double velocity, vex::velocityUnits units_v ) {
+  motors.leftA().startRotateTo(rotation,units,velocity,units_v);
+  motors.leftB().startRotateTo(rotation,units,velocity,units_v);
+  motors.rightA().rotateTo(rotation,units,velocity,units_v);
+  motors.rightB().rotateTo(rotation,units,velocity,units_v);
+
 }
 
 void vext::fwd::bind(vex::controller::axis x, vex::controller::axis y) {

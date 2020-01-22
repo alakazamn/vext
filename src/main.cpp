@@ -55,28 +55,7 @@ int alliance = 2;
 /*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
-  while (true) {
-    if (Controller.ButtonY.pressing()) {
-      alliance = 0;
-      Brain.Screen.clearScreen();
-      Brain.Screen.print("Red Alliance");
-      return;
-    } else if (Controller.ButtonA.pressing()) {
-      alliance = 1;
-      Brain.Screen.clearScreen();
-      Brain.Screen.print("Blue Alliance");
-      return;
-    } else if (Controller.ButtonB.pressing()) {
-      alliance = 2;
-      Brain.Screen.clearScreen();
-      Brain.Screen.print("1pt");
-      return;
-    } else if (Controller.ButtonX.pressing()) {
-      alliance = 3;
-      Brain.Screen.print("deplohy");
-      return;
-    }
-  }
+  redacted::pre_auton(Controller, Brain);
   return;
 }
 
@@ -91,6 +70,8 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
+    redacted::auton(bot, intake, ramp, tower);
+
   /*// ramp.straight(100);
   // basic 4pt auton
   // blue
@@ -199,5 +180,5 @@ int main() {
 
   // Run the pre-autonomous function.
   //pre_auton();
-  //Controller.ButtonLeft.pressed([] { autonomous(); });
+  Controller.ButtonA.pressed([] { autonomous(); });
 }
