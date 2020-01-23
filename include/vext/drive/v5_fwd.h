@@ -1,15 +1,15 @@
 #include "vex.h"
-#include "motors/v5_four.h"
-#include "drive/v5_drive.h"
+#include "vext/motors/v5_four.h"
+#include "vext/drive/v5_drive.h"
 
 #ifndef VEXT_FWD_H
 #define VEXT_FWD_H
 
 /*-----------------------------------------------------------------------------*/
 /** @file   v5_fwd.h
- * @brief   This class utilizes the vlib::four motorgroup to provide 
+ * @brief   This class utilizes the vlib::four motorgroup to provide
  *          functionality for building a four-wheel drive.
- *          Controller binding is provided with a function, 
+ *          Controller binding is provided with a function,
  *          intended for two-stick control.
  *          Some of the methods are intended for use with autons.
  *//*---------------------------------------------------------------------------*/
@@ -71,7 +71,7 @@ public:
    */
 
   void turn(int x, int y);
-  
+
   void spin_turn(int x, int y);
 
   void setMovesWhileTurns(bool val);
@@ -89,7 +89,7 @@ public:
   void stop();
 
   void stopCoast();
-  
+
   /**
    * Binds bot movement (driver control) to two joysticks
    *
@@ -98,7 +98,7 @@ public:
    */
   void bind(vex::controller::axis x, vex::controller::axis y);
 
-  /** 
+  /**
     * @prog_lang{block|cpp|pro}
     * @drawer_cat{setting}
     * @block_sig{Motor.setMaxTorque(50,percent);}
@@ -109,15 +109,15 @@ public:
     */
   void            setMaxTorque( double value, vex::percentUnits units );
 
-  /** 
+  /**
     * @prog_lang{cpp|pro}
     * @drawer_cat{setting}
     * @block_sig{Motor.resetRotation();}
-    * @brief Resets the motor's encoder to the value of zero. 
-    */   
+    * @brief Resets the motor's encoder to the value of zero.
+    */
   void            resetRotation( void );
 
-  /** 
+  /**
       * @prog_lang{cpp|pro}
       * @drawer_cat{action}
       * @block_sig{Motor.startRotateTo(90,vex::rotationUnits::deg,50,vex::velocityUnits::pct);}
@@ -128,7 +128,7 @@ public:
       * @param units_v The measurement unit for the velocity value.
       */
 void            rotateTo( double rotation, vex::rotationUnits units, double velocity, vex::velocityUnits units_v );
-    
+
 };
 } // namespace vext
 #endif

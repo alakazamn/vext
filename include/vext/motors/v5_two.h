@@ -1,5 +1,10 @@
 #import "vex.h"
 
+#include "vex_units.h"
+#include <cmath>
+#include <iostream>
+#include <math.h>       /* atan2 */
+
 #ifndef VEXT_TWO_CLASS_H
 #define VEXT_TWO_CLASS_H
 /*-----------------------------------------------------------------------------*/
@@ -8,7 +13,7 @@
  *          to perform actions on multiple motors together, as if they were one.
  *          This class extends that functionality with actions specific to four
  *          motors, such as turning. It also provides the foundation for something
- *          like a four-motor chaindrive. 
+ *          like a four-motor chaindrive.
  *          Use of the vlib_four class allows for easy controller binding using vext's
  *          macros (btn or axs, found below).
  *//*---------------------------------------------------------------------------*/
@@ -74,8 +79,8 @@ public:
   void stop();
 
 /*
-* These (#define and the subsequent lines) are preprocessor 
-* macros that are used to sidestep a limitation in how C++ works. 
+* These (#define and the subsequent lines) are preprocessor
+* macros that are used to sidestep a limitation in how C++ works.
 *
 * They are intended to make code
 * more concise and readable elsewhere in the program.

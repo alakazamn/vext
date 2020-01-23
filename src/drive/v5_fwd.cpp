@@ -1,6 +1,6 @@
-#import "drive/v5_drive.h"
+#import "vext/drive/v5_drive.h"
 
-#import "drive/v5_fwd.h"
+#import "vext/drive/v5_fwd.h"
 
 #include "vex_units.h"
 #include <iostream>
@@ -31,7 +31,7 @@ void vext::fwd::moveBy(double inches, double speed) {
   motors.leftB().spinFor(-revs, vex::rotationUnits::rev, speed,
                         vex::velocityUnits::pct, false);
   motors.rightA().spinFor(-revs, vex::rotationUnits::rev, speed,
-                         vex::velocityUnits::pct, true);  
+                         vex::velocityUnits::pct, true);
   motors.rightB().spinFor(-revs, vex::rotationUnits::rev, speed,
                          vex::velocityUnits::pct, true);
 }

@@ -1,16 +1,16 @@
 #include "vex.h"
-#include "motors/v5_two.h"
-#include "drive/v5_drive.h"
+#include "vext/motors/v5_two.h"
+#include "vext/drive/v5_drive.h"
 
 #ifndef VEXT_CHAINDRIVE_H
 #define VEXT_CHAINDRIVE_H
 
 /*-----------------------------------------------------------------------------*/
 /** @file   v5_chaindrive.h
- * @brief   This class utilizes the vlib::two motorgroup to provide 
+ * @brief   This class utilizes the vlib::two motorgroup to provide
  *          functionality for building a chaindrive (one motor per side,
  *          with wheels connected by a chain).
- *          Controller binding is provided with a function, 
+ *          Controller binding is provided with a function,
  *          intended for one-stick control.
  *          Some of the methods are intended for use with autons.
  *//*---------------------------------------------------------------------------*/
@@ -72,7 +72,7 @@ public:
    * @param x The position of the horizontal joystick
    * @param y The position of the vertical joystick
    */
-  
+
   void turn(int x, int y);
 
   /**
