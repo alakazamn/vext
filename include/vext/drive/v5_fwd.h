@@ -72,11 +72,6 @@ public:
 
   void turn(int x, int y);
 
-  void spin_turn(int x, int y);
-
-  void setMovesWhileTurns(bool val);
-
-  bool getMovesWhileTurns();
 
   /**
    * Stop a two-motor bot and hold

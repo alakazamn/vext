@@ -8,10 +8,6 @@
  * Implementation of vlib::chaindrive methods
  */
 
-void vext::fwd::setMovesWhileTurns(bool val) { moveWhileTurning = val; }
-
-bool vext::fwd::getMovesWhileTurns() { return moveWhileTurning; }
-
 void vext::fwd::spinBy(double degrees, double speed) {
   double revs = ((degrees / 360.0) * 13.70) / 4;
   motors.leftA().spinFor(-revs, vex::rotationUnits::rev, speed,
