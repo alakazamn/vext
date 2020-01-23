@@ -1,5 +1,5 @@
-#import "drive/v5_drive.h"
-#import "motors/v5_four.h"
+#import "vext/drive/v5_drive.h"
+#import "vext/motors/v5_four.h"
 #include "vex_units.h"
 #include <cmath>
 #include <iostream>
@@ -19,7 +19,7 @@ void vext::four::straight(int power) {
 }
 
 void vext::four::turn(int x, int y) {
-      leftA().spin(vex::directionType::fwd, (x + y)/1, vex::velocityUnits::pct); 
+      leftA().spin(vex::directionType::fwd, (x + y)/1, vex::velocityUnits::pct);
       leftB().spin(vex::directionType::fwd, (x + y)/1, vex::velocityUnits::pct);
       rightA().spin(vex::directionType::fwd, (x - y)/1, vex::velocityUnits::pct);
       rightB().spin(vex::directionType::fwd, (x - y)/1, vex::velocityUnits::pct);

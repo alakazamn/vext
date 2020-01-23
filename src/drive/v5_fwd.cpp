@@ -1,16 +1,12 @@
-#import "drive/v5_drive.h"
+#import "vext/drive/v5_drive.h"
 
-#import "drive/v5_fwd.h"
+#import "vext/drive/v5_fwd.h"
 
 #include "vex_units.h"
 #include <iostream>
 /*
  * Implementation of vlib::chaindrive methods
  */
-
-void vext::fwd::setMovesWhileTurns(bool val) { moveWhileTurning = val; }
-
-bool vext::fwd::getMovesWhileTurns() { return moveWhileTurning; }
 
 void vext::fwd::spinBy(double degrees, double speed) {
   double revs = ((degrees / 360.0) * 13.70) / 4;
@@ -31,7 +27,7 @@ void vext::fwd::moveBy(double inches, double speed) {
   motors.leftB().spinFor(-revs, vex::rotationUnits::rev, speed,
                         vex::velocityUnits::pct, false);
   motors.rightA().spinFor(-revs, vex::rotationUnits::rev, speed,
-                         vex::velocityUnits::pct, true);  
+                         vex::velocityUnits::pct, true);
   motors.rightB().spinFor(-revs, vex::rotationUnits::rev, speed,
                          vex::velocityUnits::pct, true);
 }

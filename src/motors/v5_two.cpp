@@ -1,9 +1,6 @@
-#import "drive/v5_drive.h"
-#import "motors/v5_two.h"
-#include "vex_units.h"
-#include <cmath>
-#include <iostream>
-#include <math.h>       /* atan2 */
+#import "vext/drive/v5_drive.h"
+#import "vext/motors/v5_two.h"
+
 
 /*
  * Implementation of vlib::two methods
@@ -25,7 +22,7 @@ void vext::two::turn(int x, int y) {
   const double percent = (vext::drive::joystickAngle(x,y) - low*45) / 45.0;
 
   left().spin(vex::directionType::rev, vext::drive::tween(percent, 100*l[low], 100*l[high]), vex::velocityUnits::pct);
-  right().spin(vex::directionType::rev, vext::drive::tween(percent, 100*r[low], 100*r[high]), vex::velocityUnits::pct);  
+  right().spin(vex::directionType::rev, vext::drive::tween(percent, 100*r[low], 100*r[high]), vex::velocityUnits::pct);
 }
 
 void vext::two::stop() {
