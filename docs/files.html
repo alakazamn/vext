@@ -9,6 +9,10 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -22,6 +26,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">VEXT
+   &#160;<span id="projectnumber">v0.1-beta</span>
    </div>
    <div id="projectbrief">VEXT provides basic, commonsense extensions to regular VEX V5 functionality</div>
   </td>
@@ -47,6 +52,22 @@ $(function() {
 /* @license-end */</script>
 <div id="main-nav"></div>
 </div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
+$(document).ready(function(){initNavTree('files.html',''); initResizable(); });
+/* @license-end */
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -67,20 +88,30 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock">Here is a list of all documented files with brief descriptions:</div><div class="directory">
-<div class="levels">[detail level <span onclick="javascript:toggleLevel(1);">1</span><span onclick="javascript:toggleLevel(2);">2</span><span onclick="javascript:toggleLevel(3);">3</span>]</div><table class="directory">
+<div class="levels">[detail level <span onclick="javascript:toggleLevel(1);">1</span><span onclick="javascript:toggleLevel(2);">2</span><span onclick="javascript:toggleLevel(3);">3</span><span onclick="javascript:toggleLevel(4);">4</span>]</div><table class="directory">
 <tr id="row_0_" class="even"><td class="entry"><span style="width:0px;display:inline-block;">&#160;</span><span id="arr_0_" class="arrow" onclick="toggleFolder('0_')">&#9660;</span><span id="img_0_" class="iconfopen" onclick="toggleFolder('0_')">&#160;</span><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html" target="_self">include</a></td><td class="desc"></td></tr>
 <tr id="row_0_0_"><td class="entry"><span style="width:16px;display:inline-block;">&#160;</span><span id="arr_0_0_" class="arrow" onclick="toggleFolder('0_0_')">&#9660;</span><span id="img_0_0_" class="iconfopen" onclick="toggleFolder('0_0_')">&#160;</span><a class="el" href="dir_0315b0d6438a6d3ba8108f8d7aa3ffca.html" target="_self">vext</a></td><td class="desc"></td></tr>
-<tr id="row_0_0_0_" class="even"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><a href="v5__gui_8h_source.html"><span class="icondoc"></span></a><a class="el" href="v5__gui_8h.html" target="_self">v5_gui.h</a></td><td class="desc"><br  />
- </td></tr>
-<tr id="row_0_0_1_"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><a href="vext_8h_source.html"><span class="icondoc"></span></a><b>vext.h</b></td><td class="desc"></td></tr>
+<tr id="row_0_0_0_" class="even"><td class="entry"><span style="width:32px;display:inline-block;">&#160;</span><span id="arr_0_0_0_" class="arrow" onclick="toggleFolder('0_0_0_')">&#9660;</span><span id="img_0_0_0_" class="iconfopen" onclick="toggleFolder('0_0_0_')">&#160;</span><a class="el" href="dir_f5c416d999dce1691f2ecec1086b352a.html" target="_self">drive</a></td><td class="desc"></td></tr>
+<tr id="row_0_0_0_0_"><td class="entry"><span style="width:64px;display:inline-block;">&#160;</span><a href="v5__chaindrive_8h_source.html"><span class="icondoc"></span></a><a class="el" href="v5__chaindrive_8h.html" target="_self">v5_chaindrive.h</a></td><td class="desc">This class utilizes the vlib::two motorgroup to provide functionality for building a chaindrive (one motor per side, with wheels connected by a chain). Controller binding is provided with a function, intended for one-stick control. Some of the methods are intended for use with autons </td></tr>
+<tr id="row_0_0_0_1_" class="even"><td class="entry"><span style="width:64px;display:inline-block;">&#160;</span><a href="v5__drive_8h_source.html"><span class="icondoc"></span></a><a class="el" href="v5__drive_8h.html" target="_self">v5_drive.h</a></td><td class="desc">This abstract class should be implemented to add more types of drives for vext. Currently two and four motor drives are supported </td></tr>
+<tr id="row_0_0_0_2_"><td class="entry"><span style="width:64px;display:inline-block;">&#160;</span><a href="v5__fwd_8h_source.html"><span class="icondoc"></span></a><b>v5_fwd.h</b></td><td class="desc"></td></tr>
+<tr id="row_0_0_1_" class="even"><td class="entry"><span style="width:32px;display:inline-block;">&#160;</span><span id="arr_0_0_1_" class="arrow" onclick="toggleFolder('0_0_1_')">&#9660;</span><span id="img_0_0_1_" class="iconfopen" onclick="toggleFolder('0_0_1_')">&#160;</span><a class="el" href="dir_329769fba7472c45214c0d38df6cf0dd.html" target="_self">motors</a></td><td class="desc"></td></tr>
+<tr id="row_0_0_1_0_"><td class="entry"><span style="width:64px;display:inline-block;">&#160;</span><a href="v5__four_8h_source.html"><span class="icondoc"></span></a><b>v5_four.h</b></td><td class="desc"></td></tr>
+<tr id="row_0_0_1_1_" class="even"><td class="entry"><span style="width:64px;display:inline-block;">&#160;</span><a href="v5__motor_8h_source.html"><span class="icondoc"></span></a><b>v5_motor.h</b></td><td class="desc"></td></tr>
+<tr id="row_0_0_1_2_"><td class="entry"><span style="width:64px;display:inline-block;">&#160;</span><a href="v5__two_8h_source.html"><span class="icondoc"></span></a><b>v5_two.h</b></td><td class="desc"></td></tr>
+<tr id="row_0_0_2_" class="even"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><a href="v5__gui_8h_source.html"><span class="icondoc"></span></a><a class="el" href="v5__gui_8h.html" target="_self">v5_gui.h</a></td><td class="desc"></td></tr>
+<tr id="row_0_0_3_"><td class="entry"><span style="width:48px;display:inline-block;">&#160;</span><a href="vext_8h_source.html"><span class="icondoc"></span></a><b>vext.h</b></td><td class="desc"></td></tr>
 </table>
 </div><!-- directory -->
 </div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.17
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.17 </li>
+  </ul>
+</div>
 </body>
 </html>

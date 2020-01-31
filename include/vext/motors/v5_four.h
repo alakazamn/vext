@@ -3,7 +3,8 @@
 #ifndef VEXT_FOUR_CLASS_H
 #define VEXT_FOUR_CLASS_H
 /*-----------------------------------------------------------------------------*/
-/** @file    v5_four.h
+/* @addtogroup Motors
+ * @file    v5_four.h
  * @brief   VEX provides a class called "motor_group" which allows a programmer
  *          to perform actions on multiple motors together, as if they were one.
  *          This class extends that functionality with actions specific to two
@@ -14,8 +15,12 @@
  *//*---------------------------------------------------------------------------*/
 
 namespace vext {
-
+  
+  /*! \addtogroup motors 
+  *  @{
+  */
 class four : public vex::motor_group {
+  /*! @} */
 private:
   /*We store the motor port instead of the motor object
   because the latter approach caused issues*/

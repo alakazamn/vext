@@ -1,7 +1,8 @@
 #include "vex.h"
 
 /*-----------------------------------------------------------------------------*/
-/** @file   v5_motor.h
+/* @addtogroup Motors
+ * @file   v5_motor.h
  * @brief   This is just the vanilla VEX motor class, but with some methods that
  *          allow interchangeability for binding either one, two, or four motor
  *          groups.
@@ -11,8 +12,11 @@
 #define   VEXT_MOTOR_CLASS_H
 
 namespace vext {
-  
+  /*! \addtogroup motors 
+  *  @{
+  */
   class motor : public vex::motor {
+  /*! @} */
     public:
      /** 
      * @prog_lang{cpp|pro}

@@ -9,26 +9,28 @@
  */
 
 void vext::fwd::spinBy(double degrees, double speed) {
-  double revs = ((degrees / 360.0) * 13.70) / 4;
-  motors.leftA().spinFor(-revs, vex::rotationUnits::rev, speed,
+  resetRotation();
+  double revs = ((degrees / 360.0) * diag) / 4;
+  motors.leftA().rotateFor(vex::directionType::fwd, revs, vex::rotationUnits::rev, speed,
                         vex::velocityUnits::pct, false);
-  motors.leftB().spinFor(-revs, vex::rotationUnits::rev, speed,
+  motors.leftB().rotateFor(vex::directionType::fwd, revs, vex::rotationUnits::rev, speed,
                         vex::velocityUnits::pct, false);
-  motors.rightA().spinFor(revs, vex::rotationUnits::rev, speed,
-                         vex::velocityUnits::pct, true);
-  motors.rightB().spinFor(revs, vex::rotationUnits::rev, speed,
+  motors.rightA().rotateFor(vex::directionType::fwd, revs, vex::rotationUnits::rev, speed,
+                         vex::velocityUnits::pct, false);
+  motors.rightB().rotateFor(vex::directionType::fwd, revs, vex::rotationUnits::rev, speed,
                          vex::velocityUnits::pct, true);
 }
 
 void vext::fwd::moveBy(double inches, double speed) {
-  double revs = inches / (5 * M_PI);
-  motors.leftA().spinFor(-revs, vex::rotationUnits::rev, speed,
+  resetRotation();
+  double revs = inches / (wh * M_PI);
+  motors.leftA().rotateFor(vex::directionType::fwd, revs, vex::rotationUnits::rev, speed,
                         vex::velocityUnits::pct, false);
-  motors.leftB().spinFor(-revs, vex::rotationUnits::rev, speed,
+  motors.leftB().rotateFor(vex::directionType::fwd, revs, vex::rotationUnits::rev, speed,
                         vex::velocityUnits::pct, false);
-  motors.rightA().spinFor(-revs, vex::rotationUnits::rev, speed,
-                         vex::velocityUnits::pct, true);
-  motors.rightB().spinFor(-revs, vex::rotationUnits::rev, speed,
+  motors.rightA().rotateFor(vex::directionType::rev, revs, vex::rotationUnits::rev, speed,
+                         vex::velocityUnits::pct, false);
+  motors.rightB().rotateFor(vex::directionType::rev, revs, vex::rotationUnits::rev, speed,
                          vex::velocityUnits::pct, true);
 }
 
@@ -59,7 +61,6 @@ void vext::fwd::rotateTo( double rotation, vex::rotationUnits units, double velo
   motors.leftB().startRotateTo(rotation,units,velocity,units_v);
   motors.rightA().rotateTo(rotation,units,velocity,units_v);
   motors.rightB().rotateTo(rotation,units,velocity,units_v);
-
 }
 
 void vext::fwd::bind(vex::controller::axis x, vex::controller::axis y) {
