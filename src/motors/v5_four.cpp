@@ -21,8 +21,8 @@ void vext::four::straight(int power) {
 void vext::four::turn(int x, int y) {
       leftA().spin(vex::directionType::fwd, (x + y)/1, vex::velocityUnits::pct);
       leftB().spin(vex::directionType::fwd, (x + y)/1, vex::velocityUnits::pct);
-      rightA().spin(vex::directionType::fwd, (x - y)/1, vex::velocityUnits::pct);
-      rightB().spin(vex::directionType::fwd, (x - y)/1, vex::velocityUnits::pct);
+      rightA().spin(vex::directionType::rev, (x - y)/1, vex::velocityUnits::pct);
+      rightB().spin(vex::directionType::rev, (x - y)/1, vex::velocityUnits::pct);
 }
 
 void vext::four::stop() {

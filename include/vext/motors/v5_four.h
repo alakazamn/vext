@@ -9,61 +9,55 @@
  *          to perform actions on multiple motors together, as if they were one.
  *          This class extends that functionality with actions specific to two
  *          motors, such as turning. It also provides the foundation for something
- *          like a two-motor chaindrive. 
+ *          like a two-motor chaindrive.
  *          Use of the vlib_two class allows for easy controller binding using vlib's
  *          macros (btn or axs, found below).
  *//*---------------------------------------------------------------------------*/
 
 namespace vext {
-  
-  /*! \addtogroup motors 
+
+  /*! \addtogroup motors
   *  @{
   */
 class four : public vex::motor_group {
   /*! @} */
 private:
-  /*We store the motor port instead of the motor object
-  because the latter approach caused issues*/
-  int32_t leftAPort;
-  int32_t leftBPort;
-  int32_t rightAPort;
-  int32_t rightBPort;
+  vex::motor *leftAP;
+  vex::motor *leftBP;
+  vex::motor *rightAP;
+  vex::motor *rightBP;
 
 public:
-  /*
-  * Creates a two-motor group, which is a subclass of the generic vex::motor_group.
-  * Don't use this. It'll create memory problems. But I think it's required.
-  */
-  four() : vex::motor_group() {}
+
   ~four() {}
 
   /*
-  * Creates a two-motor group, given a left motor and a right motor.
+  * Creates a four-motor group, given a left motor and a right motor.
   * @param &m1 Address of left motor
   * @param &m2 Address of right motor
   */
   template <typename... Args>
-  four(vex::motor &m1, vex::motor &m2, vex::motor &m3, vex::motor &m4) : vex::motor_group(m1, m2, m3, m4) {
-    leftAPort = m1.index();
-    leftBPort = m2.index();
-    rightAPort = m3.index();
-    rightBPort = m4.index();
+  four(vex::motor m1, vex::motor m2, vex::motor m3, vex::motor m4) : vex::motor_group(m1, m2, m3, m4) {
+    leftAP = &m1;
+    leftBP = &m2;
+    rightAP = &m3;
+    rightBP = &m4;
   }
 
   /*
     Getters and Setters for specific motors in group (something missing from vex::motor_group)
   */
   vex::motor leftA() {
-    return vex::motor(leftAPort, true);
+    return *leftAP;
   }
   vex::motor leftB() {
-    return vex::motor(leftBPort, true);
+    return *leftBP;
   }
   vex::motor rightA() {
-    return vex::motor(rightAPort, true);
+    return *rightAP;
   }
   vex::motor rightB() {
-    return vex::motor(rightBPort, true);
+    return *rightBP;
   }
 
   /*
@@ -93,8 +87,8 @@ public:
   void stop();
 
 /*
-* These (#define and the subsequent lines) are preprocessor 
-* macros that are used to sidestep a limitation in how C++ works. 
+* These (#define and the subsequent lines) are preprocessor
+* macros that are used to sidestep a limitation in how C++ works.
 *
 * They are intended to make code
 * more concise and readable elsewhere in the program.
@@ -112,6 +106,13 @@ public:
   up.pressed([] { four.straight(pow); });                                     \
   down.released([] { four.stop(); });                                             \
   up.released([] { four.stop(); });
+
+#define u_btn(powUp, powDown, up, down, four)                                                \
+  down.pressed([] { four.straight(-powDown); });                                      \
+  up.pressed([] { four.straight(powUp); });                                     \
+  down.released([] { four.stop(); });                                             \
+  up.released([] { four.stop(); });
+
 
 /*
 * Allows binding a vext::four motorgroup to an joystick axis
