@@ -1,5 +1,5 @@
 #include "vex.h"
-
+#include <cmath>
 /*-----------------------------------------------------------------------------*/
 /**@file       v5_drive.h
  * @brief      This abstract class should be implemented to add more types of
@@ -11,7 +11,7 @@
 #define VEXT_DRIVE_H
 
 namespace vext {
-    /*! \addtogroup drive 
+    /*! \addtogroup drive
     *  @{
     */
     class drive {
@@ -23,7 +23,7 @@ namespace vext {
       * @param axis Just the axis of the controller you want to check.
       * @return int Positive for up, negative for down, zero for neutral.
       */
-      static int direction(vex::controller::axis axis) {
+      static int axisDirection(vex::controller::axis axis) {
         if (axis.position() > 10) {
           return 1;
         } else if (axis.position() < -10) {
@@ -41,9 +41,9 @@ namespace vext {
         double low = fmin(a,b);
         double high = fmax(a,b);
         if(a>b)  {
-          return a - (abs(high - low) * percent);
+          return a - (std::fabs(high - low) * percent);
         } else {
-          return a + (abs(high - low) * percent);
+          return a + (std::fabs(high - low) * percent);
         }
       }
 
@@ -106,5 +106,49 @@ namespace vext {
       */
       virtual void bind(vex::controller::axis x, vex::controller::axis y) = 0;
     };
+
+    /*
+    * These (#define and the subsequent lines) are preprocessor
+    * macros that are used to sidestep a limitation in how C++ works.
+    *
+    * They are intended to make code
+    * more concise and readable elsewhere in the program.
+    */
+
+    /*
+    * Allows binding a vext::four motorgroup to a button pair
+    * @param int pow Velocity for all motors
+    * @param vex::controller::button up Button for positive velocity.
+    * @param vex::controller::button down Button for negative velocity.
+    * @param vext::four four Four-button motorgroup
+    */
+    #define btn(pow, up, down, four)                                                \
+      down.pressed([] { four.straight(-pow); });                                      \
+      up.pressed([] { four.straight(pow); });                                     \
+      down.released([] { four.stop(); });                                             \
+      up.released([] { four.stop(); });
+
+    #define u_btn(powUp, powDown, up, down, four)                                                \
+      down.pressed([] { four.straight(-powDown); });                                      \
+      up.pressed([] { four.straight(powUp); });                                     \
+      down.released([] { four.stop(); });                                             \
+      up.released([] { four.stop(); });
+
+
+    /*
+    * Allows binding a vext::four motorgroup to an joystick axis
+    * @param vex::controller::axis axis Joystick Axis for control.
+    * @param vext::four four Four-button motorgroup
+    */
+    #define axs(axis, four)                                                    \
+      static auto moveUpdate = [&] {                                               \
+        if (axis.position() >= 10 || axis.position() <= -10) {                     \
+          four.straight(axis.position());                                      \
+        } else {                                                                   \
+          four.stop();                                                              \
+        }                                                                          \
+      };                                                                           \
+      axis.changed([] { moveUpdate(); });
+      
 } // namespace vlib
 #endif

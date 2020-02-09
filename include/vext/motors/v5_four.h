@@ -28,7 +28,6 @@ private:
   vex::motor *rightBP;
 
 public:
-
   ~four() {}
 
   /*
@@ -86,48 +85,6 @@ public:
    */
   void stop();
 
-/*
-* These (#define and the subsequent lines) are preprocessor
-* macros that are used to sidestep a limitation in how C++ works.
-*
-* They are intended to make code
-* more concise and readable elsewhere in the program.
-*/
-
-/*
-* Allows binding a vext::four motorgroup to a button pair
-* @param int pow Velocity for all motors
-* @param vex::controller::button up Button for positive velocity.
-* @param vex::controller::button down Button for negative velocity.
-* @param vext::four four Four-button motorgroup
-*/
-#define btn(pow, up, down, four)                                                \
-  down.pressed([] { four.straight(-pow); });                                      \
-  up.pressed([] { four.straight(pow); });                                     \
-  down.released([] { four.stop(); });                                             \
-  up.released([] { four.stop(); });
-
-#define u_btn(powUp, powDown, up, down, four)                                                \
-  down.pressed([] { four.straight(-powDown); });                                      \
-  up.pressed([] { four.straight(powUp); });                                     \
-  down.released([] { four.stop(); });                                             \
-  up.released([] { four.stop(); });
-
-
-/*
-* Allows binding a vext::four motorgroup to an joystick axis
-* @param vex::controller::axis axis Joystick Axis for control.
-* @param vext::four four Four-button motorgroup
-*/
-#define axs(axis, four)                                                    \
-  static auto moveUpdate = [&] {                                               \
-    if (axis.position() >= 10 || axis.position() <= -10) {                     \
-      four.straight(axis.position());                                      \
-    } else {                                                                   \
-      four.stop();                                                              \
-    }                                                                          \
-  };                                                                           \
-  axis.changed([] { moveUpdate(); });
 };
 } // namespace vlib
 

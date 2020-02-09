@@ -15,12 +15,12 @@
  *             This class extends that functionality with actions specific to four
  *             motors, such as turning. It also provides the foundation for something
  *             like a four-motor chaindrive.
- *             Use of the vlib_four class allows for easy controller binding using 
+ *             Use of the vlib_four class allows for easy controller binding using
  *             vext's macros (btn or axs, found below).
  *//*---------------------------------------------------------------------------*/
 
 namespace vext {
-  /*! \addtogroup motors 
+  /*! \addtogroup motors
   *  @{
   */
 class two : public vex::motor_group {
@@ -81,42 +81,6 @@ public:
    * Applies stops both motors and applies brakeType::hold
    */
   void stop();
-
-/*
-* These (#define and the subsequent lines) are preprocessor
-* macros that are used to sidestep a limitation in how C++ works.
-*
-* They are intended to make code
-* more concise and readable elsewhere in the program.
-*/
-
-/*
-* Allows binding a vlib::two motorgroup to a button pair
-* @param int pow Velocity for both motors
-* @param vex::controller::button up Button for positive velocity.
-* @param vex::controller::button down Button for negative velocity.
-* @param vlib::two two Two-button motorgrouup
-*/
-#define btn(pow, up, down, two)                                                \
-  down.pressed([] { two.straight(-pow); });                                      \
-  up.pressed([] { two.straight(pow); });                                     \
-  down.released([] { two.stop(); });                                             \
-  up.released([] { two.stop(); });
-
-/*
-* Allows binding a vlib::two motorgroup to an joystick axis
-* @param vex::controller::axis axis Joystick Axis for control.
-* @param vlib::two two Two-button motorgrouup
-*/
-#define axs(axis, two)                                                    \
-  static auto moveUpdate = [&] {                                               \
-    if (axis.position() >= 10 || axis.position() <= -10) {                     \
-      two.straight(axis.position());                                      \
-    } else {                                                                   \
-      two.stop();                                                              \
-    }                                                                          \
-  };                                                                           \
-  axis.changed([] { moveUpdate(); });
 };
 } // namespace vlib
 

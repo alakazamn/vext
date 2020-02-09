@@ -30,7 +30,7 @@ void vext::chaindrive::stop() { motors.stop(); }
 
 void vext::chaindrive::bind(vex::controller::axis x, vex::controller::axis y) {
   static auto moveUpdate = [&] {
-    if (direction(y) != 0 || direction(x) !=0) { // axis 1 and axis 3
+    if (axisDirection(y) != 0 || axisDirection(x) !=0) { // axis 1 and axis 3
       turn(x.position(), y.position());
     } else {
       stop();

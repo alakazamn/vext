@@ -18,28 +18,23 @@ namespace vext {
     /*! \addtogroup drive
     *  @{
     */
-    class fwd : public drive {
+    class fwd : public drive, public vext::four {
     /*! @} */
-    private:
+    protected:
       bool moveWhileTurning;
       double diag;
       double wh;
     public:
-      vext::four *motor_group;
       /*
       * Construct a chaindrive with left and right motors
       * @param left Left port
       * @param right Right port
       */
-      fwd(vex::motor leftA ,vex::motor leftB, vex::motor rightA, vex::motor rightB, double wheel, double diagonal) {
-        motor_group = &vext::four(leftA, leftB, rightA, rightB);
+      fwd(vex::motor leftA ,vex::motor leftB, vex::motor rightA, vex::motor rightB, double wheel, double diagonal) : vext::four(leftA, leftB, rightA, rightB) {
         diag = diagonal;
         wh = wheel;
       };
 
-      vext::four motors() {
-        return *motor_group;
-      }
       /**
       * Rotate the robot by an specific amount of degrees.
       *

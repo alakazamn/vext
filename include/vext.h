@@ -11,4 +11,9 @@
 
 #include "vext/motors/v5_four.h"
 #include "vext/drive/v5_fwd.h"
+
+enum vext::alliance {
+  RED, BLUE
+};
+
 #endif
