@@ -46,7 +46,7 @@ namespace vext {
       * @param left Left motor
       * @param right Right motor
       */
-      void spinBy(double degrees, double kP, double kD);
+      void spinBy(double degrees, double speed, double kP, double kD);
 
       /**
       * Move the robot by an specific amount of inches, using an inertial sensor.

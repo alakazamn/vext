@@ -11,7 +11,7 @@
 double calculateAngle(double angle) {
       return (angle  > 180) ? angle - 360 : angle;
 }
-void vext::id::spinBy(double degrees, double kP, double kD) {
+void vext::id::spinBy(double degrees, double speed, double kP, double kD) {
   double deg = degrees;
   if(vext::id::allianceColor == vext::alliance::BLUE) {
     deg *= -1;
@@ -31,8 +31,13 @@ void vext::id::spinBy(double degrees, double kP, double kD) {
       double dPart = ((error - lastError) / 10) * kD;
 
       double pID = (kP*error) + dPart;
-      pID = pID > 10 ? 10 : pID;
-      pID = pID < -10 ? -10 : pID;
+      if(fabs(deg) < 10) {
+        pID = pID > 10 ? 10 : pID;
+        pID = pID < -10 ? -10 : pID;
+      } else {
+        pID = pID > speed ? speed : pID;
+        pID = pID < -speed ? -speed : pID;
+      }
       
       std::cout << error << "|" << calculateAngle(inert->angle(vex::rotationUnits::deg)) << "|" << deg << std::endl;
         leftA().spin(vex::directionType::fwd, pID,
