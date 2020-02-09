@@ -81,6 +81,12 @@ public:
    * Applies stops both motors and applies brakeType::hold
    */
   void stop();
+
+  void stopCoast() {
+    left().stop(vex::brakeType::coast);
+    right().stop(vex::brakeType::coast);
+  }
+
 };
 } // namespace vlib
 
