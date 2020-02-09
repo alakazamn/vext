@@ -25,6 +25,8 @@ namespace vext {
     /*! @} */
     private:
         alliance allianceColor = alliance::RED;
+        double kP = 12/7; 
+        double kD = 8.0/21;
     public:
       vex::inertial *inert;
       /*
@@ -46,7 +48,13 @@ namespace vext {
       * @param left Left motor
       * @param right Right motor
       */
-      void spinBy(double degrees, double speed, double kP, double kD);
+      void spinBy(double degrees, double speed);
+
+      void setConstants(double p, double d) {
+        kP = p;
+        kD = d;
+      }
+
 
       /**
       * Move the robot by an specific amount of inches, using an inertial sensor.
