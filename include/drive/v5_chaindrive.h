@@ -1,6 +1,7 @@
-#include "vex.h"
-#include "vext/motors/v5_two.h"
-#include "vext/drive/v5_drive.h"
+#include  "../vex.h"
+#include "../motors/v5_two.h"
+#include "../auton/v5_autons.h"
+#include "v5_drive.h"
 
 #ifndef VEXT_CHAINDRIVE_H
 #define VEXT_CHAINDRIVE_H
@@ -16,7 +17,7 @@
  *//*---------------------------------------------------------------------------*/
 
 namespace vext {
-    /*! \addtogroup drive 
+    /*! \addtogroup drive
     *  @{
     */
     class chaindrive : public drive {
@@ -89,4 +90,5 @@ namespace vext {
       void bind(vex::controller::axis x, vex::controller::axis y);
     };
 } // namespace vlib
+
 #endif

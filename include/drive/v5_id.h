@@ -1,11 +1,3 @@
-#include "vex.h"
-#include "vext/motors/v5_four.h"
-#include "vext/drive/v5_fwd.h"
-#include "vext/v5_autons.h"
-
-#ifndef VEXT_ID_H
-#define VEXT_ID_H
-
 /*-----------------------------------------------------------------------------*/
 /* @file   v5_id.h
  * @brief   This class utilizes the vlib::four motorgroup to provide
@@ -16,6 +8,15 @@
  *          This class uses an inertial sensor to make more accurate
  *          movement
  *//*---------------------------------------------------------------------------*/
+
+#ifndef VEXT_ID_H
+#define VEXT_ID_H
+
+#include "v5_fwd.h"
+
+#include "../motors/v5_four.h"
+#include "../auton/v5_autons.h"
+
 
 namespace vext {
     /*! \addtogroup drive

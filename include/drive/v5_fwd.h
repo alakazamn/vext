@@ -1,10 +1,3 @@
-#include "vex.h"
-#include "vext/motors/v5_four.h"
-#include "vext/drive/v5_drive.h"
-
-#ifndef VEXT_FWD_H
-#define VEXT_FWD_H
-
 /*-----------------------------------------------------------------------------*/
 /* @file   v5_fwd.h
  * @brief   This class utilizes the vlib::four motorgroup to provide
@@ -13,6 +6,13 @@
  *          intended for two-stick control.
  *          Some of the methods are intended for use with autons.
  *//*---------------------------------------------------------------------------*/
+
+#ifndef VEXT_FWD_H
+#define VEXT_FWD_H
+
+#include "v5_drive.h"
+#include "../motors/v5_four.h"
+#include "../auton/v5_autons.h"
 
 namespace vext {
     /*! \addtogroup drive

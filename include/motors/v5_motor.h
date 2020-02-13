@@ -1,5 +1,3 @@
-#include "vex.h"
-
 /*-----------------------------------------------------------------------------*/
 /* @addtogroup Motors
  * @file   v5_motor.h
@@ -10,6 +8,7 @@
 
 #ifndef   VEXT_MOTOR_CLASS_H
 #define   VEXT_MOTOR_CLASS_H
+#include <cmath>
 
 namespace vext {
   /*! \addtogroup motors 
@@ -64,7 +63,7 @@ namespace vext {
       void straight(int power) {
         vex::directionType direction =
             power < 0 ? vex::directionType::fwd : vex::directionType::rev;
-        spin(direction, abs(power), vex::percentUnits::pct);
+        spin(direction, std::fabs(power), vex::percentUnits::pct);
       }
 
       void stop(vex::brakeType brake) {

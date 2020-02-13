@@ -1,4 +1,3 @@
-#include "vex.h"
 
 #ifndef VEXT_PD_H
 #define VEXT_PD_H

@@ -1,19 +1,18 @@
 #ifndef VLIB_H
 #define VLIB_H
 
+#include "auton/v5_autons.h"
+#include "auton/v5_pd.h"
 
-#include "vext/motors/v5_motor.h"
 
-#include "vext/drive/v5_drive.h"
+#include "motors/v5_motor.h"
+#include "motors/v5_two.h"
+#include "motors/v5_four.h"
 
-#include "vext/motors/v5_two.h"
-#include "vext/drive/v5_chaindrive.h"
+#include "drive/v5_drive.h"
+#include "drive/v5_chaindrive.h"
+#include "drive/v5_fwd.h"
+#include "drive/v5_id.h"
 
-#include "vext/motors/v5_four.h"
-#include "vext/drive/v5_fwd.h"
-
-enum vext::alliance {
-  RED, BLUE
-};
 
 #endif

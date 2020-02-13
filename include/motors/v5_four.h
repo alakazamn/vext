@@ -1,7 +1,7 @@
-#import "vex.h"
-
 #ifndef VEXT_FOUR_CLASS_H
 #define VEXT_FOUR_CLASS_H
+#import "../vex.h"
+
 /*-----------------------------------------------------------------------------*/
 /* @addtogroup Motors
  * @file    v5_four.h

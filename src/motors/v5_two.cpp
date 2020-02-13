@@ -1,6 +1,4 @@
-#import "vext/drive/v5_drive.h"
-#import "vext/motors/v5_two.h"
-
+#include "vext.h"
 
 /*
  * Implementation of vlib::two methods

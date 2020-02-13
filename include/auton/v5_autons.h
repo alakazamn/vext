@@ -1,3 +1,4 @@
+#include  "../vex.h"
 #ifndef VLIB_AL
 #define VLIB_AL
 

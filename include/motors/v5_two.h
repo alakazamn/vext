@@ -1,6 +1,3 @@
-#import "vex.h"
-
-#include "vex_units.h"
 #include <cmath>
 #include <iostream>
 #include <math.h>       /* atan2 */
