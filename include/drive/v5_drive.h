@@ -105,7 +105,18 @@ namespace vext {
       * @param x The horizontal controller axis
       * @param y Left The vertical controller axis
       */
-      virtual void bind(vex::controller::axis x, vex::controller::axis y) = 0;
+      void bind(vex::controller::axis x, vex::controller::axis y) {
+        static auto moveUpdate = [&] {
+          if (axisDirection(y) != 0 || axisDirection(x) !=0) { // axis 1 and axis 3
+            turn(x.position(), y.position());
+          } else {
+            stop();
+          }
+        };
+
+        y.changed([] { moveUpdate(); });
+        x.changed([] { moveUpdate(); });
+      }
     };
 
     /*

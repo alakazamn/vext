@@ -6,8 +6,14 @@
  */
 
 void vext::fwd::spinBy(double degrees, double speed) {
+  double deg = degrees;
+
+  if (vext::fwd::allianceColor == vext::alliance::BLUE) {
+      deg *= -1;
+    }
+
   resetRotation();
-  double revs = ((degrees / 360.0) * diag) / 4;
+  double revs = ((deg / 360.0) * diag) / 4;
   leftA().rotateFor(vex::directionType::fwd, revs, vex::rotationUnits::rev, speed,
                         vex::velocityUnits::pct, false);
   leftB().rotateFor(vex::directionType::fwd, revs, vex::rotationUnits::rev, speed,
@@ -28,10 +34,10 @@ void vext::fwd::moveBy(double inches, double speed) {
      vex::controller Controller;
 
 
-    double leftRot = maxLeft;
-    double rightRot = maxRight;
+    const double leftRot = maxLeft;
+    const double rightRot = maxRight;
     double dL = revs - leftRot;
-    double dR = revs - leftRot;
+    double dR = revs - rightRot;
 
     if(leftRot == rightRot) {
       leftA().spin(vex::directionType::fwd, speed,
@@ -112,18 +118,6 @@ void vext::fwd::rotateTo( double rotation, vex::rotationUnits units, double velo
   rightB().rotateTo(rotation,units,velocity,units_v);
 }
 
-void vext::fwd::bind(vex::controller::axis x, vex::controller::axis y) {
-  static auto moveUpdate = [&] {
-    if (axisDirection(y) != 0 || axisDirection(x) !=0) { // axis 1 and axis 3
-      turn(x.position(), y.position());
-    } else {
-      stop();
-    }
-  };
-
-  y.changed([] { moveUpdate(); });
-  x.changed([] { moveUpdate(); });
-}
 
 
 // namespace vlib

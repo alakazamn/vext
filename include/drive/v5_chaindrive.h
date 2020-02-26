@@ -81,13 +81,6 @@ namespace vext {
 
       void stop();
 
-      /**
-       * Binds bot movement (driver control) to two joysticks
-       *
-       * @param x The horizontal controller axis
-       * @param y Left The vertical controller axis
-       */
-      void bind(vex::controller::axis x, vex::controller::axis y);
     };
 } // namespace vlib
 

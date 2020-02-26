@@ -24,6 +24,7 @@ namespace vext {
       bool moveWhileTurning;
       double diag;
       double wh;
+      alliance allianceColor = alliance::RED;
     public:
       /*
       * Construct a chaindrive with left and right motors
@@ -91,14 +92,6 @@ namespace vext {
       void stopCoast();
 
       /**
-      * Binds bot movement (driver control) to two joysticks
-      *
-      * @param x The horizontal controller axis
-      * @param y Left The vertical controller axis
-      */
-      void bind(vex::controller::axis x, vex::controller::axis y);
-
-      /**
         * @prog_lang{block|cpp|pro}
         * @drawer_cat{setting}
         * @block_sig{Motor.setMaxTorque(50,percent);}
@@ -128,6 +121,14 @@ namespace vext {
           * @param units_v The measurement unit for the velocity value.
           */
     void            rotateTo( double rotation, vex::rotationUnits units, double velocity, vex::velocityUnits units_v );
+
+    void setAlliance(alliance a) {
+      allianceColor = a;
+    }
+    vext::alliance getAlliance() {
+      return allianceColor;
+    }
+
 
     };
 } // namespace vext

@@ -22,12 +22,14 @@ namespace vext {
     /*! \addtogroup drive
     *  @{
     */
-    class id : public fwd {
+    class id : public drive, public four {
     /*! @} */
     private:
         alliance allianceColor = alliance::RED;
         double kP = 12/7; 
         double kD = 8.0/21;
+    protected:
+        double wh;
     public:
       vex::inertial *inert;
       /*
@@ -35,14 +37,30 @@ namespace vext {
       * @param left Left port
       * @param right Right port
       */
-      id(vex::motor leftA ,vex::motor leftB, vex::motor rightA, vex::motor rightB, vex::inertial *i, double wheel, double diagonal) : fwd(leftA, leftB, rightA, rightB, wheel, diagonal) {
+      id(vex::motor leftA ,vex::motor leftB, vex::motor rightA, vex::motor rightB, vex::inertial *i, double wheel)  : four(leftA, leftB, rightA, rightB) {
         inert = i;
+        wh = wheel;
       };
+
+      void setConstants(double p, double d) {
+        kP = p;
+        kD = d;
+      }
+
+      /**
+      * Stop a two-motor bot and hold
+      *
+      * @param speed The percentage of motor power to apply
+      * @param left Left motor
+      * @param right Right motor
+      */
+
+      void stop();
 
       /**
       * Rotate the robot by an specific amount of degrees, using an inertial sensor.
       *
-      * Intended for use with autons.
+      * Intended for use with autons. Utilizes alliance color to determine direction.
       *
       * @param degrees Angle to spin bot, in degrees
       * @param speed The percentage of motor power to apply
@@ -51,10 +69,15 @@ namespace vext {
       */
       void spinBy(double degrees, double speed);
 
-      void setConstants(double p, double d) {
-        kP = p;
-        kD = d;
-      }
+      /**
+      * Drive a two-motor chaindrive bot in a straight line
+      *
+      * @param speed The percentage of motor power to apply
+      */
+
+      void straight(int power);
+
+      void turn(int x, int y);
 
 
       /**

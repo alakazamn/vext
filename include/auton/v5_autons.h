@@ -8,7 +8,7 @@ class AutonType {
   public:
   enum Value : uint8_t
   {
-    ONE, FIVE, SETUP, SKILLS, BYPASS
+    ONE, FIVE, SETUP, SKILLS, BYPASS, PROTECTED
   };
 
   AutonType() = default;
@@ -30,6 +30,8 @@ class AutonType {
         return "Setup Auton";
       case SKILLS:
         return "Skills";
+      case PROTECTED:
+        return "Protected";
       case BYPASS:
         return "Bypassing Auton";
     } 

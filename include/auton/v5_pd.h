@@ -20,8 +20,8 @@ namespace vext {
     class pd {
     /*! @} */
     private:
-        double kP = 12/7; 
-        double kD = 8.0/21;
+        double kP; 
+        double kD;
         double lastError = 0;
     public:
       pd() { };
@@ -43,6 +43,10 @@ namespace vext {
 
       double calculatePD(double error) {
         double dPart = ((error - lastError) / 10) * kD;
+        return (kP * error) + dPart;
+      }
+      double calculatePD(double error, double dT) {
+        double dPart = ((error - lastError) / dT) * kD;
         return (kP * error) + dPart;
       }
     };
