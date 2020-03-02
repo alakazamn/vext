@@ -31,6 +31,10 @@ void vext::id::straight(int power) { vext::four::straight(power); }
 void vext::id::turn(int x, int y) { vext::four::turn(x, y); }
 
 void vext::id::spinBy(double degrees, double speed) {
+  spinBy(degrees, speed, 6000);
+}
+
+void vext::id::spinBy(double degrees, double speed, double kill) {
   vex::timer time;
 
   inert->resetRotation();
@@ -48,7 +52,7 @@ void vext::id::spinBy(double degrees, double speed) {
   
   // domain of degrees [-180, 180]
   auto pd = vext::pd(3.0 / 7, 25.0 / 21);
-  while (time < 6000 && (fabs(deg - calculateAngle(inert->angle(vex::rotationUnits::deg))) > 0.8)) {
+  while (time < kill && (fabs(deg - calculateAngle(inert->angle(vex::rotationUnits::deg))) > 0.8)) {
     std::cout << deg << " | "
               << calculateAngle(inert->angle(vex::rotationUnits::deg))
               << std::endl;
@@ -69,6 +73,10 @@ void vext::id::spinBy(double degrees, double speed) {
 #define currentInches leftA().rotation(vex::rotationUnits::rev) * M_PI *wh
 
 void vext::id::moveBy(double inches, double speed) {
+  moveBy(inches, speed, 6000);
+}
+
+void vext::id::moveBy(double inches, double speed, double kill) {
   vex::timer time;
   resetRotation();
 
@@ -80,7 +88,7 @@ void vext::id::moveBy(double inches, double speed) {
   const double target =
       currentInches + inches; // establish a final target using initial position
   double lastTime = time;
-  while (time < 6000 && (fabs(target - currentInches) > fabs(inches) * .01 || fabs(calculateAngle(inert->angle(vex::rotationUnits::deg))) > .05)) {
+  while (time < kill && (fabs(target - currentInches) > fabs(inches) * .01 || fabs(calculateAngle(inert->angle(vex::rotationUnits::deg))) > .05)) {
     const double angle = calculateAngle(inert->angle(vex::rotationUnits::deg));
     double fPDV = forwardPD.calculatePD(target - currentInches, lastTime);
 

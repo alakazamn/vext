@@ -70,6 +70,17 @@ namespace vext {
       void spinBy(double degrees, double speed);
 
       /**
+      * Rotate the robot by an specific amount of degrees, using an inertial sensor.
+      *
+      * Intended for use with autons. Utilizes alliance color to determine direction.
+      *
+      * @param degrees Angle to spin bot, in degrees
+      * @param speed The percentage of motor power to apply
+      * @param Kill time before killing the command.
+      */
+      void spinBy(double degrees, double speed, double kill);
+
+      /**
       * Drive a two-motor chaindrive bot in a straight line
       *
       * @param speed The percentage of motor power to apply
@@ -87,11 +98,21 @@ namespace vext {
       *
       * @param inches Distance to move, in inches
       * @param speed The percentage of motor power to apply
-      * @param left Left motor
-      * @param right Right motor
       */
 
       void moveBy(double inches, double speed);
+
+      /**
+      * Move the robot by an specific amount of inches, using an inertial sensor.
+      *
+      * Intended for use with autons.
+      *
+      * @param inches Distance to move, in inches
+      * @param speed The percentage of motor power to apply
+      * @param kill Time before killing the command
+      */
+
+      void moveBy(double inches, double speed, double kill);
 
       void calibrate() {
         inert->calibrate();
