@@ -51,14 +51,14 @@ void vext::id::spinBy(double degrees, double speed, double kill) {
   }
   
   // domain of degrees [-180, 180]
-  auto pd = vext::pd(3.0 / 7, 25.0 / 21);
+  auto pd = vext::pd(4.0 / 9, 35.0 / 21);
   while (time < kill && (fabs(deg - calculateAngle(inert->angle(vex::rotationUnits::deg))) > 0.8)) {
     std::cout << deg << " | "
               << calculateAngle(inert->angle(vex::rotationUnits::deg))
               << std::endl;
     double pID = pd.calculatePD(
         deg - calculateAngle(inert->angle(vex::rotationUnits::deg)));
-    if (fabs(deg) < 10) {
+    if (fabs(deg - calculateAngle(inert->angle(vex::rotationUnits::deg))) < 10) {
       cap(pID, 10);
     } else {
       cap(pID, speed);
@@ -82,7 +82,7 @@ void vext::id::moveBy(double inches, double speed, double kill) {
 
 
   auto forwardPD = vext::pd(100.0/5, 2/7);
-  auto sidePD = vext::pd(5.0 / 7, 8.0 / 21);
+  auto sidePD = vext::pd(5.0 / 7, 20.0 / 21);
   const double targetAngle = calculateAngle(
       inert->angle(vex::rotationUnits::deg)); // initial angle serves as target
   const double target =
